@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @livewireStyles
 </head>
 
 <body class="min-h-screen bg-gray-50 dark:bg-darker-gray text-gray-900 dark:text-white"
@@ -19,6 +19,8 @@
     </main>
 
     <livewire:public.footer />
+
+    @livewireScripts
 </body>
 
 </html>

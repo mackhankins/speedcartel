@@ -20,7 +20,6 @@ Route::get('/races', function() { return view('coming-soon'); })->name('races');
 Route::get('/sponsors', function() { return view('coming-soon'); })->name('sponsors');
 Route::get('/contact', function() { return view('coming-soon'); })->name('contact');
 Route::get('/cart', Cart::class)->name('cart');
-Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -49,12 +48,12 @@ Route::post('/logout', function() {
 // Protected Routes
 Route::middleware([
     'auth',
-    config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/profile', function() {
-        return redirect()->route('dashboard');
-    })->name('profile');
+    // Dashboard Routes
+    Route::get('/dashboard', Dashboard::class)->name('dashboard');
+    Route::get('/dashboard/profile', \App\Livewire\Dashboard\Profile::class)->name('profile');
+    
     Route::get('/settings', function() {
         return redirect()->route('dashboard');
     })->name('settings');

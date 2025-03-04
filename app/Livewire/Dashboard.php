@@ -19,6 +19,6 @@ class Dashboard extends Component
 
         return view('livewire.dashboard', [
             'stats' => $stats
-        ]);
+        ])->layout('components.layouts.dashboard');
     }
 } 

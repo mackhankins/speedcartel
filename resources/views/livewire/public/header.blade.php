@@ -56,11 +56,11 @@
                         x-transition:leave-end="transform opacity-0 scale-95"
                         class="absolute right-0 mt-2 w-48 bg-white dark:bg-darker-gray rounded-md shadow-lg">
                         @auth
-                            <a href="/dashboard"
+                            <a href="{{ route('dashboard') }}"
                                 class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Dashboard</a>
-                            <a href="/profile"
+                            <a href="{{ route('profile') }}"
                                 class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Profile</a>
-                            <a href="/settings"
+                            <a href="{{ route('settings') }}"
                                 class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Settings</a>
                             <div class="border-t border-gray-100 dark:border-light-gray"></div>
                             <x-theme-toggle />
@@ -131,11 +131,11 @@
 
             @auth
                 <div class="border-t border-gray-200 dark:border-light-gray my-2"></div>
-                <a href="/dashboard"
+                <a href="{{ route('dashboard') }}"
                     class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Dashboard</a>
-                <a href="/profile"
+                <a href="{{ route('profile') }}"
                     class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Profile</a>
-                <a href="/settings"
+                <a href="{{ route('settings') }}"
                     class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Settings</a>
                 <div class="border-t border-gray-200 dark:border-light-gray my-2"></div>
                 <form method="POST" action="{{ route('logout') }}">

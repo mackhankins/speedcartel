@@ -11,6 +11,7 @@ use App\Livewire\Auth\ResetPassword;
 use App\Http\Controllers\SocialiteController;
 use App\Livewire\Auth\TwoFactorAuth;
 use App\Livewire\Auth\Profile;
+use App\Livewire\Public\Cart;
 
 // Public Routes
 Route::get('/', Home::class)->name('home');
@@ -18,6 +19,7 @@ Route::get('/team', function() { return view('coming-soon'); })->name('team');
 Route::get('/races', function() { return view('coming-soon'); })->name('races');
 Route::get('/sponsors', function() { return view('coming-soon'); })->name('sponsors');
 Route::get('/contact', function() { return view('coming-soon'); })->name('contact');
+Route::get('/cart', Cart::class)->name('cart');
 Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
 // Authentication Routes

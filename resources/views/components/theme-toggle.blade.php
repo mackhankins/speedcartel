@@ -1,7 +1,6 @@
-<flux:button x-data x-on:click="$flux.dark = ! $flux.dark" variant="ghost" size="sm" square class="group"
+<button x-data x-on:click="$store.theme.toggle()"
+    class="p-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray rounded-lg group"
     aria-label="Toggle theme">
-    <flux:icon.sun x-show="! $flux.dark" variant="mini"
-        class="h-5 w-5 text-gray-700 dark:text-white transition-transform group-hover:rotate-12" />
-    <flux:icon.moon x-show="$flux.dark" variant="mini"
-        class="h-5 w-5 text-gray-700 dark:text-white transition-transform group-hover:-rotate-12" />
-</flux:button>
+    <x-icon name="sun" class="w-5 h-5 block dark:hidden" mini />
+    <x-icon name="moon" class="w-5 h-5 hidden dark:block" mini />
+</button>

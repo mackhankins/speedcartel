@@ -1,6 +1,6 @@
 <div>
     <div class="max-w-7xl mx-auto">
-        <flux:heading level="1" size="xl" class="font-orbitron mb-8">Dashboard</flux:heading>
+        <h1 class="text-3xl font-orbitron mb-8">Dashboard</h1>
 
         <!-- Stats Overview -->
         <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

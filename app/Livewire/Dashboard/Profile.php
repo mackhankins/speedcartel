@@ -12,20 +12,23 @@ use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
 use Laravel\Fortify\Actions\ConfirmTwoFactorAuthentication;
 use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
 use Livewire\Attributes\Title;
+use WireUi\Traits\WireUiActions;
 
 class Profile extends Component
 {
+    use WireUiActions;
+
     // Account Info
     public $name = '';
     public $phone = '';
     public $counter = 0;
     public $testMessage = '';
-    
+
     // Password Change
     public $current_password = '';
     public $password = '';
     public $password_confirmation = '';
-    
+
     // Address Form
     public $showAddressForm = false;
     public $address_type = 'shipping';
@@ -46,7 +49,9 @@ class Profile extends Component
     public $showingConfirmation = false;
     public $showingRecoveryCodes = false;
     public $confirmationCode = '';
-    
+
+    public $addressToDelete = null;
+
     public function mount()
     {
         $user = Auth::user();
@@ -76,7 +81,7 @@ class Profile extends Component
         $user->name = $this->name;
         $user->phone = $this->phone;
         $user->save();
-        
+
         $this->dispatch('notify', message: 'Profile updated successfully');
     }
 
@@ -88,7 +93,7 @@ class Profile extends Component
         ]);
 
         $user = Auth::user();
-        
+
         if (!Hash::check($this->current_password, $user->password)) {
             $this->addError('current_password', 'The current password is incorrect.');
             return;
@@ -203,7 +208,7 @@ class Profile extends Component
         ]);
 
         $user = Auth::user();
-        
+
         if ($this->is_default) {
             $user->addresses()
                 ->where('type', $this->address_type)
@@ -243,10 +248,30 @@ class Profile extends Component
         $this->dispatch('notify', message: 'Address saved successfully');
     }
 
+    public function confirmDelete($addressId)
+    {
+        $this->addressToDelete = $addressId;
+        $this->dialog()->confirm([
+            'title' => 'Delete Address',
+            'description' => 'Are you sure you want to delete this address? This action cannot be undone.',
+            'accept' => [
+                'label' => 'Delete',
+                'method' => 'deleteAddress',
+                'params' => $addressId,
+                'color' => 'negative'
+            ],
+            'reject' => [
+                'label' => 'Cancel',
+                'color' => 'slate'
+            ]
+        ]);
+    }
+
     public function deleteAddress($addressId)
     {
         $address = Address::findOrFail($addressId);
         $address->delete();
+        $this->addressToDelete = null;
         $this->dispatch('notify', message: 'Address deleted successfully');
     }
 
@@ -254,13 +279,13 @@ class Profile extends Component
     {
         $address = Address::findOrFail($addressId);
         $user = Auth::user();
-        
+
         $user->addresses()
             ->where('type', $address->type)
             ->update(['is_default' => false]);
-            
+
         $address->update(['is_default' => true]);
-        
+
         $this->dispatch('notify', message: 'Default address updated successfully');
     }
 
@@ -273,10 +298,10 @@ class Profile extends Component
     public function render()
     {
         $user = Auth::user();
-        
+
         return view('livewire.dashboard.profile', [
             'shippingAddresses' => $user->addresses()->where('type', 'shipping')->get(),
             'billingAddresses' => $user->addresses()->where('type', 'billing')->get(),
         ])->layout('components.layouts.dashboard');
     }
-} 
+}

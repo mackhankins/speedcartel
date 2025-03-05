@@ -1,0 +1,94 @@
+/* Dark mode styles for WireUI components */
+.dark {
+    /* Target WireUI select component */
+    .choices {
+        @apply bg-darker-gray border-gray-600 !important;
+
+        &__list {
+            @apply bg-darker-gray !important;
+        }
+
+        &__list--dropdown {
+            @apply bg-darker-gray border-gray-600 !important;
+
+            .choices__item {
+                @apply text-white hover:bg-light-gray !important;
+            }
+        }
+
+        &__inner {
+            @apply bg-darker-gray !important;
+        }
+    }
+
+    /* Target WireUI form components */
+    .form-input,
+    .form-textarea,
+    .form-select,
+    .form-multiselect {
+        @apply bg-darker-gray border-gray-600 text-white !important;
+
+        &:focus {
+            @apply border-red-500 ring-red-500/30 !important;
+        }
+    }
+
+    /* Target WireUI input label */
+    .form-label {
+        @apply text-white !important;
+    }
+
+    /* Target WireUI containers */
+    .bg-white {
+        @apply bg-darker-gray border border-gray-600 !important;
+    }
+
+    /* Target select dropdowns */
+    [x-ref="optionsContainer"] {
+        @apply bg-darker-gray border-gray-600 !important;
+
+        [x-ref="options"] {
+            @apply bg-darker-gray !important;
+        }
+
+        [role="option"] {
+            @apply text-white hover:bg-light-gray !important;
+        }
+    }
+}
+
+/* Remove competing styles */
+@layer base {
+    .dark select option {
+        @apply bg-darker-gray text-white;
+    }
+}
+
+@layer base {
+    .dark [type="text"],
+    .dark [type="email"],
+    .dark [type="url"],
+    .dark [type="password"],
+    .dark [type="number"],
+    .dark [type="date"],
+    .dark [type="datetime-local"],
+    .dark [type="month"],
+    .dark [type="search"],
+    .dark [type="tel"],
+    .dark [type="time"],
+    .dark [type="week"],
+    .dark [type="file"],
+    .dark select,
+    .dark textarea,
+    .dark .select2-container--default .select2-selection--single,
+    .dark .select2-container--default .select2-selection--multiple {
+        @apply bg-darker-gray border-gray-600 text-white;
+    }
+}
+
+@layer components {
+    .dark .wireui-input,
+    .dark .formkit-input {
+      @apply bg-gray-800 border-gray-700 text-white;
+    }
+  }

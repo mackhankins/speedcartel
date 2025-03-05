@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->date('birthdate');
             $table->json('class')->nullable();
             $table->string('skill')->nullable();
-            $table->string('profile_pic');
+            $table->string('profile_pic', 255)->nullable();
             $table->foreignId('user_id')->nullable();
             $table->timestamps();
         });

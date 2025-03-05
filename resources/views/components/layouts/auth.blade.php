@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" 
-      x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" 
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+      x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }"
       :class="{ 'dark': darkMode }">
 <head>
     <meta charset="utf-8">
@@ -8,11 +8,12 @@
     <title>{{ config('app.name') }} - Authentication</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    @wireUiScripts
 </head>
 <body class="min-h-screen bg-gray-50 dark:bg-darker-gray text-gray-900 dark:text-white"
       x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))"
       @toggle-theme.window="darkMode = !darkMode">
-    
+
     <div class="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <!-- Logo -->
         <div class="mb-6">
@@ -50,7 +51,6 @@
             </button>
         </div>
     </div>
-
     @livewireScripts
 </body>
-</html> 
+</html>

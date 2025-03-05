@@ -1,17 +1,14 @@
 <div>
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white font-orbitron">Riders</h1>
+            <h1 class="text-3xl font-orbitron mb-8">Riders</h1>
             @unless($showForm)
-                <button type="button" wire:click="create"
-                    class="flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                    Add New Rider
-                </button>
+                <x-button wire:click="create" primary label="Add New Rider" />
             @endunless
         </div>
 
         @if($showForm)
-            <div class="bg-white dark:bg-light-gray shadow rounded-2xl px-6 py-8 mb-8">
+            <div class="bg-white dark:bg-darker-gray shadow rounded-2xl px-6 py-8 mb-8">
                 <h2 class="text-xl font-bold text-gray-900 dark:text-white font-orbitron mb-6">
                     {{ $editingRider ? 'Edit Rider' : 'Add New Rider' }}
                 </h2>
@@ -19,147 +16,184 @@
                 <form wire:submit="save" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="first_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">First
-                                Name</label>
-                            <div class="mt-1">
-                                <input type="text" wire:model="first_name" id="first_name"
-                                    class="block w-full px-4 py-3 bg-white dark:bg-light-gray border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-red-400/30 dark:focus:ring-red-500/50 focus:border-red-400 dark:focus:border-red-500 focus:outline-none rounded-xl shadow-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500">
-                                @error('first_name') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
-                            </div>
+                            <x-input wire:model="first_name" id="first_name" type="text" label="First Name" />
+                            <x-error for="first_name" class="mt-2" />
                         </div>
 
                         <div>
-                            <label for="last_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last
-                                Name</label>
-                            <div class="mt-1">
-                                <input type="text" wire:model="last_name" id="last_name"
-                                    class="block w-full px-4 py-3 bg-white dark:bg-light-gray border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-red-400/30 dark:focus:ring-red-500/50 focus:border-red-400 dark:focus:border-red-500 focus:outline-none rounded-xl shadow-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500">
-                                @error('last_name') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
-                            </div>
+                            <x-input wire:model="last_name" id="last_name" type="text" label="Last Name" />
+                            <x-error for="last_name" class="mt-2" />
                         </div>
 
                         <div>
-                            <label for="nickname"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nickname</label>
-                            <div class="mt-1">
-                                <input type="text" wire:model="nickname" id="nickname"
-                                    class="block w-full px-4 py-3 bg-white dark:bg-light-gray border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-red-400/30 dark:focus:ring-red-500/50 focus:border-red-400 dark:focus:border-red-500 focus:outline-none rounded-xl shadow-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500">
-                                @error('nickname') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
-                            </div>
+                            <x-input wire:model="nickname" id="nickname" type="text" label="Nickname" />
+                            <x-error for="nickname" class="mt-2" />
                         </div>
 
                         <div>
-                            <label for="birthdate"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Birthdate</label>
-                            <div class="mt-1">
-                                <input type="date" wire:model="birthdate" id="birthdate"
-                                    class="block w-full px-4 py-3 bg-white dark:bg-light-gray border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-red-400/30 dark:focus:ring-red-500/50 focus:border-red-400 dark:focus:border-red-500 focus:outline-none rounded-xl shadow-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500">
-                                @error('birthdate') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
-                            </div>
+                            <x-input wire:model="birthdate" id="birthdate" type="date" label="Birthdate" />
+                            <x-error for="birthdate" class="mt-2" />
                         </div>
 
                         <div>
-                            <label for="class"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Class</label>
-                            <div class="mt-1">
-                                <flux:select variant="listbox" multiple placeholder="Choose industries..."
-                                    wire:model="class" id="class">
-                                    <flux:option>Photography</flux:option>
-                                    <flux:option>Design services</flux:option>
-                                    <flux:option>Web development</flux:option>
-                                    <flux:option>Accounting</flux:option>
-                                    <flux:option>Legal services</flux:option>
-                                    <flux:option>Consulting</flux:option>
-                                    <flux:option>Other</flux:option>
-                                </flux:select>
-                                @error('class') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
-                            </div>
+                            <x-select wire:model="class" id="class" label="Class" placeholder="Select classes" multiselect>
+                                <x-select.option label="Class" value="class" />
+                                <x-select.option label="Cruiser" value="cruiser" />
+                            </x-select>
+                            <x-error for="class" class="mt-2" />
                         </div>
 
                         <div>
-                            <label for="skill" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Skill
-                                Level</label>
-                            <div class="mt-1">
-                                <input type="text" wire:model="skill" id="skill"
-                                    class="block w-full px-4 py-3 bg-white dark:bg-light-gray border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-red-400/30 dark:focus:ring-red-500/50 focus:border-red-400 dark:focus:border-red-500 focus:outline-none rounded-xl shadow-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500">
-                                @error('skill') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
-                            </div>
+                            <x-select wire:model="skill" id="skill" label="Skill Level" placeholder="Select skill level">
+                                <x-select.option label="Beginner" value="beginner" />
+                                <x-select.option label="Intermediate" value="intermediate" />
+                                <x-select.option label="Expert" value="expert" />
+                                <x-select.option label="Pro" value="pro" />
+                            </x-select>
+                            <x-error for="skill" class="mt-2" />
                         </div>
 
                         <div>
-                            <label for="profile_pic"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Profile Picture
-                                URL</label>
+                            <x-label for="profile_pic" value="Profile Picture" />
                             <div class="mt-1">
-                                <input type="text" wire:model="profile_pic" id="profile_pic"
-                                    class="block w-full px-4 py-3 bg-white dark:bg-light-gray border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-red-400/30 dark:focus:ring-red-500/50 focus:border-red-400 dark:focus:border-red-500 focus:outline-none rounded-xl shadow-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500">
-                                @error('profile_pic') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
+                                <div x-data="{
+                                    photoPreview: @if($temp_profile_pic) '{{ Storage::url($temp_profile_pic) }}' @else null @endif,
+                                    isDragging: false,
+                                    handleFiles(event) {
+                                        const file = event.target.files[0] || event.dataTransfer.files[0];
+                                        if (!file) return;
+
+                                        if (!file.type.startsWith('image/')) {
+                                            $wire.dispatch('notify', { message: 'Please upload an image file.', type: 'error' });
+                                            return;
+                                        }
+
+                                        this.photoPreview = URL.createObjectURL(file);
+                                        $wire.upload('profile_pic', file);
+                                    }
+                                }"
+                                @profile-pic-reset.window="photoPreview = null"
+                                >
+                                    <div class="relative">
+                                        <input
+                                            type="file"
+                                            class="sr-only"
+                                            wire:model="profile_pic"
+                                            x-ref="photo"
+                                            @change="handleFiles($event)"
+                                            accept="image/*"
+                                        >
+
+                                        <div
+                                            @click="$refs.photo.click()"
+                                            @dragover.prevent="isDragging = true"
+                                            @dragleave.prevent="isDragging = false"
+                                            @drop.prevent="isDragging = false; handleFiles($event)"
+                                            :class="{ 'border-cartel-red bg-red-50 dark:bg-red-900/20': isDragging }"
+                                            class="relative flex justify-center px-6 py-10 cursor-pointer border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-xl hover:border-cartel-red dark:hover:border-cartel-red transition-colors duration-200"
+                                        >
+                                            <template x-if="!photoPreview">
+                                                <div class="text-center">
+                                                    <x-icon name="camera" class="mx-auto h-12 w-12 text-gray-400" />
+                                                    <div class="mt-4 flex text-sm text-gray-600 dark:text-gray-400">
+                                                        <span class="relative cursor-pointer rounded-md font-medium text-cartel-red hover:text-red-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-cartel-red">
+                                                            Upload a file
+                                                        </span>
+                                                        <p class="pl-1">or drag and drop</p>
+                                                    </div>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                        PNG, JPG, GIF up to 5MB
+                                                    </p>
+                                                </div>
+                                            </template>
+
+                                            <template x-if="photoPreview">
+                                                <div class="absolute inset-0 flex items-center justify-center rounded-xl overflow-hidden">
+                                                    <img :src="photoPreview" class="max-h-full" />
+                                                    <button
+                                                        @click.stop="photoPreview = null; $wire.set('profile_pic', null); $wire.set('temp_profile_pic', null)"
+                                                        type="button"
+                                                        class="absolute top-2 right-2 p-1 rounded-full bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                                    >
+                                                        <x-icon name="x-mark" class="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <x-error for="profile_pic" class="mt-2" />
                             </div>
                         </div>
                     </div>
 
                     <div class="flex justify-end space-x-3">
-                        <button type="button" wire:click="resetForm"
-                            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-gray hover:bg-gray-50 dark:hover:bg-light-gray focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <x-button type="button" wire:click="resetForm" secondary>
                             Cancel
-                        </button>
-                        <button type="submit"
-                            class="px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        </x-button>
+                        <x-button type="submit" primary>
                             {{ $editingRider ? 'Update Rider' : 'Add Rider' }}
-                        </button>
+                        </x-button>
                     </div>
                 </form>
             </div>
-        @endif
-
-        <div class="bg-white dark:bg-light-gray shadow rounded-2xl px-6 py-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @forelse($riders as $rider)
-                    <div class="bg-gray-50 dark:bg-dark-gray rounded-xl p-6">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-grow">
-                                <div class="flex items-center">
-                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                                        {{ $rider->first_name }} {{ $rider->last_name }}
+        @else
+            <div class="bg-white dark:bg-light-gray shadow rounded-2xl px-6 py-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @forelse($riders as $rider)
+                        <div
+                            class="group bg-white hover:bg-gray-50 dark:bg-darker-gray dark:hover:bg-dark-gray rounded-xl transition-all duration-200 border border-gray-100 dark:border-gray-700">
+                            <div class="p-6">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div class="min-w-0">
+                                        <h3 class="font-orbitron text-xl text-gray-900 dark:text-white truncate">
+                                            {{ $rider->first_name }} {{ $rider->last_name }}
+                                        </h3>
                                         @if($rider->nickname)
-                                            <span class="text-gray-500 dark:text-gray-400">({{ $rider->nickname }})</span>
+                                            <div class="text-sm text-cartel-red dark:text-cartel-red font-medium mt-0.5 truncate">
+                                                {{ $rider->nickname }}
+                                            </div>
                                         @endif
-                                    </h3>
+                                    </div>
+                                    <div class="flex items-center space-x-1 flex-shrink-0">
+                                        <x-button wire:click="edit({{ $rider->id }})" icon="pencil" primary flat size="sm" />
+                                        <x-button wire:click="confirmDelete({{ $rider->id }})" icon="trash" negative flat
+                                            size="sm" />
+                                    </div>
                                 </div>
-                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                                    {{ $rider->birthdate->age }} years old
-                                </p>
-                                @if($rider->class || $rider->skill)
-                                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                                        {{ $rider->class }} • {{ $rider->skill }}
-                                    </p>
-                                @endif
-                            </div>
-                            <div class="ml-4 flex-shrink-0 flex space-x-2">
-                                <button type="button" wire:click="edit({{ $rider->id }})"
-                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-500">
-                                    Edit
-                                </button>
-                                <button type="button" wire:click="delete({{ $rider->id }})"
-                                    class="text-sm text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-500">
-                                    Delete
-                                </button>
+
+                                <div class="mt-4 space-y-2 text-sm">
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-gray-500 dark:text-gray-400">Age</div>
+                                        <div class="text-gray-900 dark:text-white font-medium">{{ $rider->birthdate->age }}
+                                            years</div>
+                                    </div>
+
+                                    @if($rider->class)
+                                        <div class="flex items-center justify-between">
+                                            <div class="text-gray-500 dark:text-gray-400">Class</div>
+                                            <div class="text-gray-900 dark:text-white font-medium text-right">
+                                                {{ is_array($rider->class) ? implode(', ', $rider->class) : $rider->class }}
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @if($rider->skill)
+                                        <div class="flex items-center justify-between">
+                                            <div class="text-gray-500 dark:text-gray-400">Skill</div>
+                                            <div class="text-gray-900 dark:text-white font-medium">{{ $rider->skill }}</div>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-
-                        @if($rider->profile_pic)
-                            <div class="mt-4">
-                                <img src="{{ $rider->profile_pic }}" alt="{{ $rider->first_name }}'s profile picture"
-                                    class="w-24 h-24 rounded-full object-cover">
-                            </div>
-                        @endif
-                    </div>
-                @empty
-                    <div class="col-span-full text-center py-12">
-                        <p class="text-gray-500 dark:text-gray-400">No riders added yet.</p>
-                    </div>
-                @endforelse
+                    @empty
+                        <div class="col-span-full text-center py-12">
+                            <p class="text-gray-500 dark:text-gray-400">No riders added yet.</p>
+                        </div>
+                    @endforelse
+                </div>
             </div>
-        </div>
+        @endif
     </div>
 </div>

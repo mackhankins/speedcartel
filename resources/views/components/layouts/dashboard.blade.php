@@ -1,13 +1,19 @@
 <x-layouts.app>
     <div x-data="{ mobileMenuOpen: false }" class="min-h-screen flex flex-col">
-        <!-- Mobile menu button -->
-        <div class="lg:hidden fixed bottom-8 right-8 z-50">
+        <!-- Mobile sidebar handle -->
+        <div class="lg:hidden fixed left-0 top-1/2 -translate-y-1/2 z-50">
             <button @click="mobileMenuOpen = !mobileMenuOpen"
-                class="inline-flex items-center justify-center p-3 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200">
-                <span class="sr-only">Open menu</span>
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+                class="flex items-center justify-center w-2 h-32 bg-red-500/40 hover:bg-red-500 hover:w-8 text-white shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 rounded-r-lg group">
+                <svg class="w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity duration-200" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    class="flex items-center justify-center w-1.5 h-24 bg-red-500/20 hover:bg-red-500 hover:w-6
+                    text-white shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500
+                    transition-all duration-200 rounded-r-md group">
+                    <span class="sr-only">Toggle sidebar</span>
+                    <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
             </button>
         </div>
 
@@ -30,7 +36,7 @@
             </div>
             <div class="hidden lg:flex lg:flex-shrink-0">
                 <div
-                    class="flex flex-col w-64 border-r border-gray-200 dark:border-light-gray bg-white dark:bg-dark-gray">
+                    class="flex flex-col w-64 bg-white dark:bg-darker-gray border-l-none border-r-[1px] border-r-gray-200 dark:border-none">
                     <x-sidebar />
                 </div>
             </div>
@@ -43,4 +49,5 @@
             </div>
         </div>
     </div>
+
 </x-layouts.app>

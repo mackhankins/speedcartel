@@ -1,6 +1,6 @@
 <!-- Team Overview -->
 <a href="{{ route('dashboard') }}"
-    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('dashboard') ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:bg-opacity-50 dark:text-red-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100' }}">
+    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('dashboard') ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:bg-opacity-50 dark:text-red-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-light-gray hover:text-gray-900 dark:hover:text-gray-100' }}">
     <svg class="mr-3 h-6 w-6 {{ request()->routeIs('dashboard') ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-300' }}"
         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -11,7 +11,7 @@
 
 <!-- Profile -->
 <a href="{{ route('profile') }}"
-    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('profile') ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:bg-opacity-50 dark:text-red-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100' }}">
+    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('profile') ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:bg-opacity-50 dark:text-red-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-light-gray hover:text-gray-900 dark:hover:text-gray-100' }}">
     <svg class="mr-3 h-6 w-6 {{ request()->routeIs('profile') ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-300' }}"
         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -21,11 +21,11 @@
 </a>
 
 <!-- Divider -->
-<div class="border-t border-gray-200 dark:border-gray-700 my-3"></div>
+<div class="border-t border-gray-200 dark:border-light-gray my-3"></div>
 
 <!-- Riders -->
 <a href="{{ route('riders') }}"
-    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('riders') ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:bg-opacity-50 dark:text-red-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100' }}">
+    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('riders') ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:bg-opacity-50 dark:text-red-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-light-gray hover:text-gray-900 dark:hover:text-gray-100' }}">
     <svg class="mr-3 h-6 w-6 {{ request()->routeIs('riders') ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-300' }}"
         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -36,7 +36,7 @@
 
 <!-- Training Schedule -->
 <a href="#"
-    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100">
+    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-light-gray hover:text-gray-900 dark:hover:text-gray-100">
     <svg class="mr-3 h-6 w-6 text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-300"
         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -47,7 +47,7 @@
 
 <!-- Sponsors -->
 <a href="{{ route('sponsors') }}"
-    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('sponsors') ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:bg-opacity-50 dark:text-red-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100' }}">
+    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('sponsors') ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:bg-opacity-50 dark:text-red-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-light-gray hover:text-gray-900 dark:hover:text-gray-100' }}">
     <svg class="mr-3 h-6 w-6 {{ request()->routeIs('sponsors') ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-300' }}"
         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -58,7 +58,7 @@
 
 <!-- Contact -->
 <a href="{{ route('contact') }}"
-    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('contact') ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:bg-opacity-50 dark:text-red-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100' }}">
+    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('contact') ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:bg-opacity-50 dark:text-red-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-light-gray hover:text-gray-900 dark:hover:text-gray-100' }}">
     <svg class="mr-3 h-6 w-6 {{ request()->routeIs('contact') ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-300' }}"
         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

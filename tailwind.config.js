@@ -4,8 +4,10 @@ export default {
     "./resources/**/*.blade.php",
     "./resources/**/*.js",
     "./resources/**/*.vue",
+    "./vendor/livewire/flux-pro/stubs/**/*.blade.php",
+    "./vendor/livewire/flux/stubs/**/*.blade.php",
   ],
-  darkMode: 'class',
+  darkMode: 'selector',
   theme: {
     extend: {
       colors: {
@@ -13,6 +15,11 @@ export default {
         'dark-gray': '#121212',
         'darker-gray': '#0a0a0a',
         'light-gray': '#2a2a2a',
+        accent: {
+          DEFAULT: 'var(--color-accent)',
+          content: 'var(--color-accent-content)',
+          foreground: 'var(--color-accent-foreground)',
+        },
       },
       fontFamily: {
         'sans': ['Instrument Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],

@@ -11,14 +11,12 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 
-class CustomVerifyEmail extends VerifyEmail implements ShouldQueue
+class CustomVerifyEmail extends VerifyEmail
 {
-    use Queueable;
-
     public function toMail($notifiable)
     {
         $verificationUrl = $this->verificationUrl($notifiable);
-        
+
         return (new MailMessage)
             ->subject('Verify Your SpeedCartel Account')
             ->markdown('emails.verify-email-markdown', [
@@ -43,4 +41,4 @@ class CustomVerifyEmail extends VerifyEmail implements ShouldQueue
             ]
         );
     }
-} 
+}

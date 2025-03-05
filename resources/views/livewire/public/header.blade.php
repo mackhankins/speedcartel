@@ -27,12 +27,20 @@
                     class="px-4 py-5 text-gray-700 dark:text-white font-orbitron font-medium hover:bg-gray-100 dark:hover:bg-light-gray transition-colors duration-200">CONTACT</a>
 
                 <!-- Shopping Cart -->
-                <a href="{{ route('cart') }}" class="relative p-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray rounded-lg">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center mt-0.5">0</span>
-                </a>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ route('cart') }}"
+                        class="relative p-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray rounded-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span
+                            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center mt-0.5">0</span>
+                    </a>
+
+                    <!-- Theme Toggle -->
+                    <x-theme-toggle />
+                </div>
 
                 <!-- Auth Dropdown -->
                 <div class="relative" x-data="{ open: false }">
@@ -60,10 +68,9 @@
                                 class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Dashboard</a>
                             <a href="{{ route('profile') }}"
                                 class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Profile</a>
-                            <a href="{{ route('settings') }}"
-                                class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Settings</a>
+                            <a href="{{ route('riders') }}"
+                                class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Riders</a>
                             <div class="border-t border-gray-100 dark:border-light-gray"></div>
-                            <x-theme-toggle />
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
@@ -77,21 +84,26 @@
                             <a href="{{ route('register') }}"
                                 class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Register</a>
                             <div class="border-t border-gray-100 dark:border-light-gray"></div>
-                            <x-theme-toggle />
                         @endauth
                     </div>
                 </div>
             </div>
 
             <!-- Mobile menu button -->
-            <div class="md:hidden flex items-center space-x-2">
+            <div class="md:hidden flex items-center space-x-4">
                 <!-- Shopping Cart -->
-                <a href="{{ route('cart') }}" class="relative p-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray rounded-lg">
+                <a href="{{ route('cart') }}"
+                    class="relative p-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray rounded-lg">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center mt-0.5">0</span>
+                    <span
+                        class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center mt-0.5">0</span>
                 </a>
+
+                <!-- Theme Toggle -->
+                <x-theme-toggle />
 
                 <button type="button" @click="mobileMenuOpen = !mobileMenuOpen"
                     class="text-gray-500 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white"
@@ -115,9 +127,6 @@
         class="absolute inset-x-0 top-16 z-40 md:hidden bg-white dark:bg-darker-gray border-b border-gray-200 dark:border-light-gray"
         @click.away="mobileMenuOpen = false">
         <div class="px-2 pt-2 pb-3 space-y-1">
-            <x-theme-toggle />
-            <div class="border-t border-gray-200 dark:border-light-gray my-2"></div>
-            
             <a href="/"
                 class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">HOME</a>
             <a href="#"

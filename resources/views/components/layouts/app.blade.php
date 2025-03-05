@@ -7,6 +7,7 @@
     <title>{{ config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    @fluxStyles
 </head>
 
 <body class="min-h-screen bg-gray-50 dark:bg-darker-gray text-gray-900 dark:text-white"
@@ -21,6 +22,7 @@
     <livewire:public.footer />
 
     @livewireScripts
+    @fluxScripts
 </body>
 
 </html>

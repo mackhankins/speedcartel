@@ -123,4 +123,10 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+     * Package Service Providers...
+     */
+    Laravel\Fortify\FortifyServiceProvider::class,
+    PragmaRX\Google2FA\Google2FAServiceProvider::class,
+
 ];

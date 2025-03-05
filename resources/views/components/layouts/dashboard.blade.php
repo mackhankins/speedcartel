@@ -1,5 +1,5 @@
 <x-layouts.app>
-    <div x-data="{ mobileMenuOpen: false }">
+    <div x-data="{ mobileMenuOpen: false }" class="min-h-screen flex flex-col">
         <!-- Mobile menu button -->
         <div class="lg:hidden fixed bottom-4 right-4 z-50">
             <button @click="mobileMenuOpen = !mobileMenuOpen" 
@@ -23,7 +23,7 @@
              @click="mobileMenuOpen = false">
         </div>
 
-        <div class="flex">
+        <div class="flex-1 flex flex-grow">
             <!-- Sidebar -->
             <div x-show="mobileMenuOpen" 
                  x-transition:enter="transition ease-in-out duration-300 transform"
@@ -35,12 +35,14 @@
                  class="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-darker-gray lg:hidden">
                 <x-sidebar />
             </div>
-            <div class="hidden lg:block lg:w-64 lg:flex-shrink-0">
-                <x-sidebar />
+            <div class="hidden lg:flex lg:flex-shrink-0">
+                <div class="flex flex-col w-64 border-r border-gray-200 dark:border-light-gray bg-white dark:bg-dark-gray">
+                    <x-sidebar />
+                </div>
             </div>
 
             <!-- Page Content -->
-            <div class="flex-1">
+            <div class="flex-1 lg:pl-64">
                 <main>
                     {{ $slot }}
                 </main>

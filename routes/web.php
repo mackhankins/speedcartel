@@ -88,6 +88,7 @@ Route::middleware([
     // Dashboard Routes
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/dashboard/profile', \App\Livewire\Dashboard\Profile::class)->name('profile');
+    Route::get('/dashboard/riders', App\Livewire\Dashboard\Riders::class)->name('riders');
     
     Route::get('/settings', function() {
         return redirect()->route('dashboard');

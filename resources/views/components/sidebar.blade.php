@@ -1,6 +1,6 @@
 @props(['mobileMenuOpen' => false])
 
-<div wire:ignore x-data="{ open: false }" @toggle-nav.window="open = !open">
+<div wire:ignore x-data="{ open: false }" @toggle-nav.window="open = !open" class="flex-1">
     <!-- Mobile Sidebar -->
     <div x-show="open" class="lg:hidden fixed inset-0 z-40">
         <!-- Overlay -->
@@ -25,9 +25,9 @@
     </div>
 
     <!-- Desktop Sidebar -->
-    <nav class="h-screen bg-white dark:bg-dark-gray border-r border-gray-200 dark:border-light-gray">
-        <div class="flex flex-col h-full">
-            <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
+    <nav class="flex-1 flex flex-col bg-white dark:bg-dark-gray border-r border-gray-200 dark:border-light-gray h-screen">
+        <div class="flex-1 flex flex-col">
+            <div class="flex-1 flex flex-col pt-5 pb-4">
                 <div class="flex-1 px-4 space-y-1">
                     @include('components.sidebar-links')
                 </div>

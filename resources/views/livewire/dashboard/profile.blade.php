@@ -56,6 +56,44 @@
                     @endif
                 </div>
 
+                @if($showingPasswordConfirmation)
+                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50">
+                        <div class="fixed inset-0 z-10 overflow-y-auto">
+                            <div class="flex min-h-full items-center justify-center p-4 text-center">
+                                <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-darker-gray px-4 pb-4 pt-5 text-left shadow-xl transition-all w-full max-w-lg">
+                                    <div class="w-full">
+                                        <div class="mt-3 text-center sm:mt-0 sm:text-left">
+                                            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
+                                                {{ $action === 'enable' ? 'Enable' : 'Disable' }} Two-Factor Authentication
+                                            </h3>
+                                            <div class="mt-2">
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                    Please enter your password to {{ $action === 'enable' ? 'enable' : 'disable' }} two-factor authentication.
+                                                </p>
+                                            </div>
+                                            <div class="mt-4">
+                                                <form wire:submit="confirmPassword('{{ $action }}')">
+                                                    <x-password 
+                                                        wire:model.live="password_confirmation" 
+                                                        label="Password" 
+                                                        placeholder="Enter your password"
+                                                        wire:keydown.enter="confirmPassword('{{ $action }}')"
+                                                        error="{{ $errors->first('password_confirmation') }}"
+                                                    />
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-3">
+                                        <x-button wire:click="confirmPassword('{{ $action }}')" primary class="w-full sm:w-auto" label="Confirm" />
+                                        <x-button wire:click="closePasswordConfirmation" secondary class="w-full sm:w-auto" label="Cancel" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 @if($showingQrCode)
                     <div class="mt-6">
                         <p class="text-sm text-gray-600 dark:text-gray-400">

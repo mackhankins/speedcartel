@@ -49,6 +49,8 @@ class Profile extends Component
     public $showingConfirmation = false;
     public $showingRecoveryCodes = false;
     public $confirmationCode = '';
+    public $showingPasswordConfirmation = false;
+    public $action = ''; // 'enable' or 'disable'
 
     public $addressToDelete = null;
 
@@ -57,7 +59,7 @@ class Profile extends Component
         $user = Auth::user();
         $this->name = $user->name;
         $this->phone = $user->phone;
-        $this->enabled2FA = $user->two_factor_secret !== null;
+        $this->enabled2FA = $user->two_factor_secret !== null && $user->two_factor_confirmed_at !== null;
     }
 
     public function increment()
@@ -108,34 +110,46 @@ class Profile extends Component
 
     public function enableTwoFactorAuthentication()
     {
-        app(EnableTwoFactorAuthentication::class)(Auth::user());
-
-        $this->enabled2FA = true;
-        $this->showingQrCode = true;
-        $this->showingConfirmation = true;
-    }
-
-    public function confirmTwoFactorAuthentication()
-    {
-        $this->validate([
-            'confirmationCode' => ['required', 'string'],
-        ]);
-
-        app(ConfirmTwoFactorAuthentication::class)(Auth::user(), $this->confirmationCode);
-
-        $this->showingQrCode = false;
-        $this->showingConfirmation = false;
-        $this->showingRecoveryCodes = true;
+        $this->action = 'enable';
+        $this->showingPasswordConfirmation = true;
     }
 
     public function disableTwoFactorAuthentication()
     {
-        app(DisableTwoFactorAuthentication::class)(Auth::user());
+        $this->action = 'disable';
+        $this->showingPasswordConfirmation = true;
+    }
 
-        $this->enabled2FA = false;
-        $this->showingQrCode = false;
-        $this->showingConfirmation = false;
-        $this->showingRecoveryCodes = false;
+    public function closePasswordConfirmation()
+    {
+        $this->showingPasswordConfirmation = false;
+        $this->password_confirmation = '';
+    }
+
+    public function confirmPassword($action)
+    {
+        $this->resetErrorBag();
+
+        if (!Hash::check($this->password_confirmation, Auth::user()->password)) {
+            $this->addError('password_confirmation', 'The provided password is incorrect.');
+            return;
+        }
+
+        if ($action === 'enable') {
+            app(EnableTwoFactorAuthentication::class)(Auth::user());
+            $this->enabled2FA = true;
+            $this->showingQrCode = true;
+            $this->showingConfirmation = true;
+        } else {
+            app(DisableTwoFactorAuthentication::class)(Auth::user());
+            $this->enabled2FA = false;
+            $this->showingQrCode = false;
+            $this->showingConfirmation = false;
+            $this->showingRecoveryCodes = false;
+        }
+
+        $this->showingPasswordConfirmation = false;
+        $this->password_confirmation = '';
     }
 
     public function showRecoveryCodes()
@@ -292,6 +306,20 @@ class Profile extends Component
     public function testLivewire()
     {
         $this->testMessage = 'Livewire is working! ' . now()->format('H:i:s');
+    }
+
+    public function confirmTwoFactorAuthentication()
+    {
+        $this->validate([
+            'confirmationCode' => ['required', 'string'],
+        ]);
+
+        app(ConfirmTwoFactorAuthentication::class)(Auth::user(), $this->confirmationCode);
+
+        $this->showingQrCode = false;
+        $this->showingConfirmation = false;
+        $this->showingRecoveryCodes = true;
+        $this->enabled2FA = true;
     }
 
     #[Title('Profile')]

@@ -20,9 +20,6 @@
     Profile
 </a>
 
-<!-- Divider -->
-<div class="border-t border-gray-200 dark:border-light-gray my-3"></div>
-
 <!-- Riders -->
 <a href="{{ route('riders') }}"
     class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('riders') ? 'bg-red-100 text-red-900 dark:bg-red-900 dark:bg-opacity-50 dark:text-red-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-light-gray hover:text-gray-900 dark:hover:text-gray-100' }}">

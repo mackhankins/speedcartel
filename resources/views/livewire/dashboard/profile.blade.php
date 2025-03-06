@@ -9,17 +9,20 @@
                 <p class="mt-1 text-gray-600 dark:text-gray-400">Update your account information.</p>
 
                 <form wire:submit="updateProfile" class="mt-6 space-y-4">
-                    <x-input wire:model.live="name" label="Name" placeholder="Enter your name" />
+                    <x-input wire:model.live="name" label="Name" placeholder="Enter your name"/>
 
                     <x-input label="Email" value="{{ Auth::user()->email }}" disabled
-                        hint="Your email cannot be changed." />
+                             hint="Your email cannot be changed."/>
 
-                    <x-input wire:model.live="phone" label="Phone Number" placeholder="(555) 555-5555"
-                        x-data="{ phone: $wire.phone }" x-init="$watch('phone', value => $wire.phone = value)"
-                        x-mask="(999) 999-9999" x-on:input="phone = $event.target.value"
-                        hint="Optional. Used for order notifications and shipping updates." />
+                    <x-maskable
+                        wire:model.live="phone"
+                        label="Phone Number"
+                        placeholder="(###) ###-####"
+                        mask="(###) ###-####"
+                        hint="Optional. Used for order notifications and shipping updates."
+                    />
 
-                    <x-button type="submit" primary class="w-full" label="Save Changes" />
+                    <x-button type="submit" primary class="w-full" label="Save Changes"/>
                 </form>
             </div>
 
@@ -29,14 +32,14 @@
                 <p class="mt-1 text-gray-600 dark:text-gray-400">Ensure your account is using a secure password.</p>
 
                 <form wire:submit="updatePassword" class="mt-6 space-y-4">
-                    <x-password wire:model.live="current_password" label="Current Password" placeholder="••••••••" />
+                    <x-password wire:model.live="current_password" label="Current Password" placeholder="••••••••"/>
 
-                    <x-password wire:model.live="password" label="New Password" placeholder="••••••••" />
+                    <x-password wire:model.live="password" label="New Password" placeholder="••••••••"/>
 
                     <x-password wire:model.live="password_confirmation" label="Confirm Password"
-                        placeholder="••••••••" />
+                                placeholder="••••••••"/>
 
-                    <x-button type="submit" primary class="w-full" label="Update Password" />
+                    <x-button type="submit" primary class="w-full" label="Update Password"/>
                 </form>
             </div>
 
@@ -49,10 +52,10 @@
                 <div class="mt-6">
                     @if(!$enabled2FA)
                         <x-button wire:click="enableTwoFactorAuthentication" primary class="w-full"
-                            label="Enable Two Factor Authentication" />
+                                  label="Enable Two Factor Authentication"/>
                     @else
                         <x-button wire:click="disableTwoFactorAuthentication" negative class="w-full"
-                            label="Disable Two Factor Authentication" />
+                                  label="Disable Two Factor Authentication"/>
                     @endif
                 </div>
 
@@ -60,22 +63,26 @@
                     <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50">
                         <div class="fixed inset-0 z-10 overflow-y-auto">
                             <div class="flex min-h-full items-center justify-center p-4 text-center">
-                                <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-darker-gray px-4 pb-4 pt-5 text-left shadow-xl transition-all w-full max-w-lg">
+                                <div
+                                    class="relative transform overflow-hidden rounded-lg bg-white dark:bg-darker-gray px-4 pb-4 pt-5 text-left shadow-xl transition-all w-full max-w-lg">
                                     <div class="w-full">
                                         <div class="mt-3 text-center sm:mt-0 sm:text-left">
                                             <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
-                                                {{ $action === 'enable' ? 'Enable' : 'Disable' }} Two-Factor Authentication
+                                                {{ $action === 'enable' ? 'Enable' : 'Disable' }} Two-Factor
+                                                Authentication
                                             </h3>
                                             <div class="mt-2">
                                                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                    Please enter your password to {{ $action === 'enable' ? 'enable' : 'disable' }} two-factor authentication.
+                                                    Please enter your password
+                                                    to {{ $action === 'enable' ? 'enable' : 'disable' }} two-factor
+                                                    authentication.
                                                 </p>
                                             </div>
                                             <div class="mt-4">
                                                 <form wire:submit="confirmPassword('{{ $action }}')">
-                                                    <x-password 
-                                                        wire:model.live="password_confirmation" 
-                                                        label="Password" 
+                                                    <x-password
+                                                        wire:model.live="password_confirmation"
+                                                        label="Password"
                                                         placeholder="Enter your password"
                                                         wire:keydown.enter="confirmPassword('{{ $action }}')"
                                                         error="{{ $errors->first('password_confirmation') }}"
@@ -85,8 +92,10 @@
                                         </div>
                                     </div>
                                     <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-3">
-                                        <x-button wire:click="confirmPassword('{{ $action }}')" primary class="w-full sm:w-auto" label="Confirm" />
-                                        <x-button wire:click="closePasswordConfirmation" secondary class="w-full sm:w-auto" label="Cancel" />
+                                        <x-button wire:click="confirmPassword('{{ $action }}')" primary
+                                                  class="w-full sm:w-auto" label="Confirm"/>
+                                        <x-button wire:click="closePasswordConfirmation" secondary
+                                                  class="w-full sm:w-auto" label="Cancel"/>
                                     </div>
                                 </div>
                             </div>
@@ -113,10 +122,11 @@
                             authenticator app.
                         </p>
                         <div class="mt-4">
-                            <x-input wire:model="confirmationCode" placeholder="Enter code" />
+                            <x-input wire:model="confirmationCode" placeholder="Enter code"/>
                         </div>
                         <div class="mt-4">
-                            <x-button wire:click="confirmTwoFactorAuthentication" primary class="w-full" label="Confirm" />
+                            <x-button wire:click="confirmTwoFactorAuthentication" primary class="w-full"
+                                      label="Confirm"/>
                         </div>
                     </div>
                 @endif
@@ -124,7 +134,8 @@
                 @if($showingRecoveryCodes)
                     <div class="mt-6">
                         <p class="text-sm text-gray-600 dark:text-gray-400">
-                            Store these recovery codes in a secure password manager. They can be used to recover access to
+                            Store these recovery codes in a secure password manager. They can be used to recover access
+                            to
                             your account if your two factor authentication device is lost.
                         </p>
                         <div class="mt-4 bg-gray-100 dark:bg-dark-gray rounded-lg p-4">
@@ -134,7 +145,7 @@
                         </div>
                         <div class="mt-4">
                             <x-button wire:click="regenerateRecoveryCodes" primary class="w-full"
-                                label="Regenerate Recovery Codes" />
+                                      label="Regenerate Recovery Codes"/>
                         </div>
                     </div>
                 @endif
@@ -148,7 +159,7 @@
                         <p class="mt-1 text-gray-600 dark:text-gray-400">Manage your shipping and billing addresses.</p>
                     </div>
                     @unless($showAddressForm)
-                        <x-button wire:click="editAddress" primary label="Add New Address" />
+                        <x-button wire:click="editAddress" primary label="Add New Address"/>
                     @endunless
                 </div>
 
@@ -158,39 +169,39 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <x-select wire:model.live="address_type" label="Address Type"
-                                    placeholder="Select address type">
-                                    <x-select.option label="Shipping Address" value="shipping" />
-                                    <x-select.option label="Billing Address" value="billing" />
+                                          placeholder="Select address type">
+                                    <x-select.option label="Shipping Address" value="shipping"/>
+                                    <x-select.option label="Billing Address" value="billing"/>
                                 </x-select>
                             </div>
 
-                            <x-input wire:model.live="full_name" label="Full Name" />
+                            <x-input wire:model.live="full_name" label="Full Name"/>
 
                             <div class="md:col-span-2">
-                                <x-input wire:model.live="address_line1" label="Address Line 1" />
+                                <x-input wire:model.live="address_line1" label="Address Line 1"/>
                             </div>
 
                             <div class="md:col-span-2">
-                                <x-input wire:model.live="address_line2" label="Address Line 2" />
+                                <x-input wire:model.live="address_line2" label="Address Line 2"/>
                             </div>
 
-                            <x-input wire:model.live="city" label="City" />
+                            <x-input wire:model.live="city" label="City"/>
 
-                            <x-input wire:model.live="state" label="State" />
+                            <x-input wire:model.live="state" label="State"/>
 
-                            <x-input wire:model.live="postal_code" label="Postal Code" />
+                            <x-input wire:model.live="postal_code" label="Postal Code"/>
 
-                            <x-input wire:model.live="country" label="Country" />
+                            <x-input wire:model.live="country" label="Country"/>
 
                             <div class="md:col-span-2">
                                 <x-checkbox wire:model.live="is_default"
-                                    label="Set as default {{ $address_type }} address" />
+                                            label="Set as default {{ $address_type }} address"/>
                             </div>
                         </div>
 
                         <div class="flex justify-end space-x-3">
-                            <x-button wire:click="resetAddressForm" secondary label="Cancel" />
-                            <x-button type="submit" primary label="Save Address" />
+                            <x-button wire:click="resetAddressForm" secondary label="Cancel"/>
+                            <x-button type="submit" primary label="Save Address"/>
                         </div>
                     </form>
                 @endif
@@ -203,8 +214,8 @@
 
                     <x-slot name="footer">
                         <div class="flex justify-end gap-x-4">
-                            <x-button flat label="Cancel" x-on:click="close" />
-                            <x-button negative label="Delete" wire:click="confirmDelete" />
+                            <x-button flat label="Cancel" x-on:click="close"/>
+                            <x-button negative label="Delete" wire:click="confirmDelete"/>
                         </div>
                     </x-slot>
                 </x-dialog>
@@ -234,19 +245,22 @@
                                                 @if($address->address_line2)
                                                     {{ $address->address_line2 }}<br>
                                                 @endif
-                                                {{ $address->city }}, {{ $address->state }} {{ $address->postal_code }}<br>
+                                                {{ $address->city }}, {{ $address->state }} {{ $address->postal_code }}
+                                                <br>
                                                 {{ $address->country }}
                                             </p>
                                         </div>
                                         <div class="ml-4 flex-shrink-0 flex space-x-1">
                                             @unless($address->is_default)
-                                                <x-button wire:click="setDefaultAddress({{ $address->id }})" icon="star" primary
-                                                    flat size="sm" x-tooltip="Set as Default" />
+                                                <x-button wire:click="setDefaultAddress({{ $address->id }})" icon="star"
+                                                          primary
+                                                          flat size="sm" x-tooltip="Set as Default"/>
                                             @endunless
                                             <x-button wire:click="editAddress({{ $address->id }})" icon="pencil" primary
-                                                flat size="sm" x-tooltip="Edit Address" />
-                                            <x-button wire:click="confirmDelete({{ $address->id }})" icon="trash" negative
-                                                flat size="sm" x-tooltip="Delete Address" />
+                                                      flat size="sm" x-tooltip="Edit Address"/>
+                                            <x-button wire:click="confirmDelete({{ $address->id }})" icon="trash"
+                                                      negative
+                                                      flat size="sm" x-tooltip="Delete Address"/>
                                         </div>
                                     </div>
                                 </div>
@@ -280,19 +294,22 @@
                                                 @if($address->address_line2)
                                                     {{ $address->address_line2 }}<br>
                                                 @endif
-                                                {{ $address->city }}, {{ $address->state }} {{ $address->postal_code }}<br>
+                                                {{ $address->city }}, {{ $address->state }} {{ $address->postal_code }}
+                                                <br>
                                                 {{ $address->country }}
                                             </p>
                                         </div>
                                         <div class="ml-4 flex-shrink-0 flex space-x-1">
                                             @unless($address->is_default)
-                                                <x-button wire:click="setDefaultAddress({{ $address->id }})" icon="star" primary
-                                                    flat size="sm" x-tooltip="Set as Default" />
+                                                <x-button wire:click="setDefaultAddress({{ $address->id }})" icon="star"
+                                                          primary
+                                                          flat size="sm" x-tooltip="Set as Default"/>
                                             @endunless
                                             <x-button wire:click="editAddress({{ $address->id }})" icon="pencil" primary
-                                                flat size="sm" x-tooltip="Edit Address" />
-                                            <x-button wire:click="confirmDelete({{ $address->id }})" icon="trash" negative
-                                                flat size="sm" x-tooltip="Delete Address" />
+                                                      flat size="sm" x-tooltip="Edit Address"/>
+                                            <x-button wire:click="confirmDelete({{ $address->id }})" icon="trash"
+                                                      negative
+                                                      flat size="sm" x-tooltip="Delete Address"/>
                                         </div>
                                     </div>
                                 </div>

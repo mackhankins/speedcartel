@@ -127,6 +127,6 @@ return [
      * Package Service Providers...
      */
     Laravel\Fortify\FortifyServiceProvider::class,
-    PragmaRX\Google2FA\Google2FAServiceProvider::class,
+    PragmaRX\Google2FA\Google2FA::class,
 
 ];

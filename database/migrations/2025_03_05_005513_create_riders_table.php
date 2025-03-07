@@ -5,24 +5,34 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up()
+    public function up(): void
     {
         Schema::create('riders', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('firstname');
+            $table->string('lastname');
             $table->string('nickname')->nullable();
-            $table->date('birthdate');
-            $table->json('class')->nullable();
-            $table->string('skill')->nullable();
-            $table->string('profile_pic', 255)->nullable();
-            $table->foreignId('user_id')->nullable();
+            $table->date('date_of_birth');
+            $table->string('class');
+            $table->string('skill_level');
+            $table->string('profile_pic')->nullable();
+            $table->string('blood_type')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('rideables', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('rider_id')->constrained()->onDelete('cascade');
+            $table->string('relationship');
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }
 
-    public function down()
+    public function down(): void
     {
+        Schema::dropIfExists('rideables');
         Schema::dropIfExists('riders');
     }
 };

@@ -11,6 +11,8 @@ use Laravel\Sanctum\HasApiTokens;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use App\Notifications\CustomVerifyEmail;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -69,8 +71,13 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Address::class);
     }
 
-    public function riders(): HasMany
+    /**
+     * Get the riders associated with the user.
+     */
+    public function riders(): BelongsToMany
     {
-        return $this->hasMany(Rider::class);
+        return $this->belongsToMany(Rider::class, 'rideables')
+            ->withPivot('relationship', 'status')
+            ->withTimestamps();
     }
 }

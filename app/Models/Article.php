@@ -7,15 +7,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use RalphJSmit\Laravel\SEO\Support\HasSEO;
 use Spatie\Tags\HasTags;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Article extends Model
+class Article extends Model implements HasMedia
 {
-    use HasTags, HasSEO;
+    use HasTags, HasSEO, InteractsWithMedia;
 
     protected $fillable = [
         'title',
         'slug',
-        'photo',
         'excerpt',
         'content',
         'published_at',
@@ -30,5 +32,26 @@ class Article extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('articles')
+            ->singleFile();
+    }
+
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(100)
+            ->height(100)
+            ->sharpen(10)
+            ->nonQueued();
+
+        $this->addMediaConversion('preview')
+            ->width(400)
+            ->height(300)
+            ->sharpen(10)
+            ->nonQueued();
     }
 }

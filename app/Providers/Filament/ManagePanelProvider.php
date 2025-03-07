@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Livewire\Auth\Login;
+use App\Livewire\Auth\VerifyEmail;
 use Filament\Http\Middleware\Authenticate;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -31,6 +32,7 @@ class ManagePanelProvider extends PanelProvider
             ->id('manage')
             ->path('manage')
             ->login(Login::class)
+            ->emailVerification(VerifyEmail::class)
             ->default()
             ->sidebarCollapsibleOnDesktop()
             ->colors([

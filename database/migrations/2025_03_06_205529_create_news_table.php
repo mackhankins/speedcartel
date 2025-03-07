@@ -15,13 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
-            $table->string('photo')->nullable();
             $table->text('excerpt')->nullable();
             $table->longText('content');
             $table->timestamp('published_at')->nullable();
             $table->foreignId('author_id')->nullable()->constrained('users')->nullOnDelete();
             $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
-            $table->json('seo')->nullable(); // For the SEO package
             $table->timestamps();
         });
     }

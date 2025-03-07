@@ -1,6 +1,4 @@
 import './bootstrap';
-// import './alpine';
-// import './livewire';
 
 // Import Croppie
 import 'croppie/croppie.css';

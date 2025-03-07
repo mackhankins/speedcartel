@@ -81,7 +81,7 @@
             </div>
 
             <!-- Mobile menu button -->
-            <div class="md:hidden flex items-center space-x-4">
+            <div class="md:hidden flex items-center space-x-2">
                 <!-- Shopping Cart -->
                 <a href="{{ route('cart') }}"
                     class="relative p-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray rounded-lg">

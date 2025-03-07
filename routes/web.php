@@ -20,7 +20,7 @@ use Laravel\Fortify\Fortify;
 
 // Public Routes
 Route::get('/', Home::class)->name('home');
-Route::get('/team', function() { return view('coming-soon'); })->name('team');
+Route::get('/team', \App\Livewire\Public\Team::class)->name('team');
 Route::get('/races', function() { return view('coming-soon'); })->name('races');
 Route::get('/sponsors', function() { return view('coming-soon'); })->name('sponsors');
 Route::get('/contact', function() { return view('coming-soon'); })->name('contact');

@@ -38,6 +38,24 @@ class Rider extends Model
     ];
 
     /**
+     * Available class options
+     */
+    public static $classOptions = [
+        'class' => 'Class',
+        'cruiser' => 'Cruiser'
+    ];
+    
+    /**
+     * Available skill level options
+     */
+    public static $skillLevelOptions = [
+        'novice' => 'Novice',
+        'intermediate' => 'Intermediate',
+        'expert' => 'Expert',
+        'pro' => 'Pro'
+    ];
+
+    /**
      * The "booted" method of the model.
      *
      * @return void

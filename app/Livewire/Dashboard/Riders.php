@@ -64,7 +64,7 @@ class Riders extends Component
         'nickname' => 'nullable|string',
         'date_of_birth' => 'required|date|before:today',
         'class' => 'nullable|array',
-        'skill_level' => 'nullable|in:beginner,intermediate,expert,pro',
+        'skill_level' => 'nullable|in:novice,intermediate,expert,pro',
         'profile_pic' => 'nullable|image|max:5120|dimensions:min_width=400,min_height=300', // 5MB max
         'relationship' => 'required|in:parent,guardian,self,other',
         'status' => 'integer|in:0,1',
@@ -479,7 +479,9 @@ class Riders extends Component
     {
         return view('livewire.dashboard.riders', [
             'riders' => $this->riders,
-            'tracks' => $this->tracks
+            'tracks' => $this->tracks,
+            'skillLevelOptions' => \App\Models\Rider::$skillLevelOptions,
+            'classOptions' => \App\Models\Rider::$classOptions
         ])->layout('components.layouts.dashboard');
     }
 }

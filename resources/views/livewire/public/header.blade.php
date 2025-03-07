@@ -17,7 +17,7 @@
             <div class="hidden md:flex items-center space-x-1">
                 <a href="/"
                     class="px-4 py-5 text-gray-700 dark:text-white font-orbitron font-medium hover:bg-gray-100 dark:hover:bg-light-gray transition-colors duration-200">HOME</a>
-                <a href="#"
+                <a href="{{ route('team') }}"
                     class="px-4 py-5 text-gray-700 dark:text-white font-orbitron font-medium hover:bg-gray-100 dark:hover:bg-light-gray transition-colors duration-200">TEAM</a>
                 <a href="#"
                     class="px-4 py-5 text-gray-700 dark:text-white font-orbitron font-medium hover:bg-gray-100 dark:hover:bg-light-gray transition-colors duration-200">RACES</a>
@@ -114,7 +114,7 @@
         <div class="px-2 pt-2 pb-3 space-y-1">
             <a href="/"
                 class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Home</a>
-            <a href="#"
+            <a href="{{ route('team') }}"
                 class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Team</a>
             <a href="#"
                 class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Races</a>

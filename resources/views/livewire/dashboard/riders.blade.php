@@ -97,10 +97,9 @@
                                 wire:model="class"
                                 label="Class"
                                 multiselect
-                                :options="[
-                                    ['name' => 'Class', 'value' => 'class'],
-                                    ['name' => 'Cruiser', 'value' => 'cruiser']
-                                ]"
+                                :options="collect($classOptions)->map(function($label, $value) {
+                                    return ['name' => $label, 'value' => $value];
+                                })->values()->toArray()"
                                 option-label="name"
                                 option-value="value"
                                 :disabled="$selectedRider && $status === 0"
@@ -109,12 +108,9 @@
                             <x-select
                                 wire:model="skill_level"
                                 label="Skill Level"
-                                :options="[
-                                    ['name' => 'Beginner', 'value' => 'beginner'],
-                                    ['name' => 'Intermediate', 'value' => 'intermediate'],
-                                    ['name' => 'Expert', 'value' => 'expert'],
-                                    ['name' => 'Pro', 'value' => 'pro'],
-                                ]"
+                                :options="collect($skillLevelOptions)->map(function($label, $value) {
+                                    return ['name' => $label, 'value' => $value];
+                                })->values()->toArray()"
                                 option-label="name"
                                 option-value="value"
                                 :disabled="$selectedRider && $status === 0"
@@ -221,7 +217,10 @@
                         <div class="group bg-white dark:bg-darker-gray rounded-xl overflow-hidden transition-all duration-200 border border-gray-100 dark:border-gray-700 hover:shadow-md">
                             <!-- Card Header with Profile Image and Name -->
                             <div class="relative">
-                                <div class="h-24 bg-gradient-to-r from-cartel-red/20 to-cartel-red"></div>
+                                <div class="h-24 bg-gradient-to-r from-gray-800 to-gray-900 relative">
+                                    <!-- Red accent line at the bottom -->
+                                    <div class="absolute bottom-0 left-0 right-0 h-1 bg-cartel-red"></div>
+                                </div>
                                 <div class="absolute -bottom-10 left-6 w-20 h-20 rounded-full overflow-hidden border-4 border-white dark:border-darker-gray shadow-sm">
                                     @if($rider->profile_pic)
                                         <img src="{{ $rider->profile_photo_url }}" alt="{{ $rider->full_name }}" class="w-full h-full object-cover">
@@ -247,8 +246,8 @@
                                         {{ $rider->firstname }} {{ $rider->lastname }}
                                     </h3>
                                     @if($rider->nickname)
-                                        <div class="text-sm text-cartel-red font-medium mt-0.5 h-5">
-                                            {{ $rider->nickname }}
+                                        <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mt-0.5 h-5">
+                                            "<span class="text-cartel-red">{{ $rider->nickname }}</span>"
                                         </div>
                                     @endif
                                     @if($rider->home_track_name)

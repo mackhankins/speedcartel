@@ -14,6 +14,7 @@
                 </h2>
 
                 <form wire:submit="save" class="space-y-6">
+                    {{ var_dump($status) }}
                     <div class="grid grid-cols-1 gap-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="relative">
@@ -22,7 +23,7 @@
                                     label="First Name" 
                                     required 
                                     autocomplete="off"
-                                    :disabled="$selectedRider && !$status"
+                                    :disabled="$selectedRider && $status === 0"
                                 />
                                 @if(!$editingRider && count($searchResults) > 0)
                                     <div class="absolute z-50 w-full mt-1 bg-white dark:bg-darker-gray rounded-md shadow-lg border border-gray-200 dark:border-light-gray">
@@ -46,20 +47,20 @@
                                 wire:model="lastname" 
                                 label="Last Name" 
                                 required 
-                                :disabled="$selectedRider && !$status"
+                                :disabled="$selectedRider && $status === 0"
                             />
 
                             <x-input 
                                 wire:model="nickname" 
                                 label="Nickname"
-                                :disabled="$selectedRider && !$status"
+                                :disabled="$selectedRider && $status === 0"
                             />
 
                             <x-input 
                                 wire:model="date_of_birth" 
                                 type="date" 
                                 label="Date of Birth"
-                                :disabled="$selectedRider && !$status"
+                                :disabled="$selectedRider && $status === 0"
                             />
 
                             <x-select
@@ -72,7 +73,7 @@
                                 ]"
                                 option-label="name"
                                 option-value="value"
-                                :disabled="$selectedRider && !$status"
+                                :disabled="$selectedRider && $status === 0"
                             />
 
                             <x-select
@@ -86,7 +87,7 @@
                                 ]"
                                 option-label="name"
                                 option-value="value"
-                                :disabled="$selectedRider && !$status"
+                                :disabled="$selectedRider && $status === 0"
                             />
 
                             <x-select

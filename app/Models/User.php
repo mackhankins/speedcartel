@@ -77,7 +77,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function riders(): BelongsToMany
     {
         return $this->belongsToMany(Rider::class, 'rideables')
-            ->withPivot('relationship')
+            ->withPivot('relationship', 'status')
             ->withTimestamps();
     }
 }

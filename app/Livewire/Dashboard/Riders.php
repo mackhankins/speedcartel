@@ -32,7 +32,7 @@ class Riders extends Component
     public $profile_pic;
     public $temp_profile_pic;
     public $relationship = 'parent';
-    public $status = false;
+    public $status = 0;
 
     protected $rules = [
         'firstname' => 'required|min:2',
@@ -43,7 +43,7 @@ class Riders extends Component
         'skill_level' => 'nullable|in:beginner,intermediate,expert,pro',
         'profile_pic' => 'nullable|image|max:5120|dimensions:min_width=400,min_height=300', // 5MB max
         'relationship' => 'required|in:parent,guardian,self,other',
-        'status' => 'boolean'
+        'status' => 'integer|in:0,1'
     ];
 
     public function mount()
@@ -73,8 +73,8 @@ class Riders extends Component
             'editingRider',
             'searchResults'
         ]);
-        // Set default status to false for new riders
-        $this->status = false;
+        // Set default status to 0 for new riders
+        $this->status = 0;
     }
 
     public function create()
@@ -87,6 +87,12 @@ class Riders extends Component
 
     public function edit(Rider $rider)
     {
+        // Get the current user's relationship with this rider
+        $userRider = Auth::user()->riders()->find($rider->id);
+        if (!$userRider) {
+            return;
+        }
+
         $this->selectedRider = $rider;
         $this->editingRider = true;
         $this->firstname = $rider->firstname;
@@ -95,7 +101,8 @@ class Riders extends Component
         $this->date_of_birth = $rider->date_of_birth->format('Y-m-d');
         $this->class = $rider->class ?? [];
         $this->skill_level = $rider->skill_level;
-        $this->status = $rider->status;
+        $this->relationship = $userRider->pivot->relationship ?? 'parent';
+        $this->status = $userRider->pivot->status ?? '0';
         $this->showForm = true;
     }
 
@@ -165,7 +172,7 @@ class Riders extends Component
             $this->date_of_birth = $rider->date_of_birth->format('Y-m-d');
             $this->class = $rider->class ?? [];
             $this->skill_level = $rider->skill_level;
-            $this->status = false; // New associations start with status 0
+            $this->status = 0; // New associations start with status 0
             $this->editingRider = false;
         }
         
@@ -191,19 +198,22 @@ class Riders extends Component
         $this->showForm = true;
         
         // Reset the status to pending for new associations
-        $this->status = false;
+        $this->status = 0;
     }
 
     protected function loadRiderData($rider)
     {
+        // Get the current user's relationship with this rider
+        $userRider = Auth::user()->riders()->find($rider->id);
+        
         $this->firstname = $rider->firstname;
         $this->lastname = $rider->lastname;
         $this->nickname = $rider->nickname;
         $this->date_of_birth = $rider->date_of_birth->format('Y-m-d');
         $this->class = $rider->class ?? [];
         $this->skill_level = $rider->skill_level;
-        $this->relationship = $rider->pivot?->relationship ?? 'parent';
-        $this->status = $rider->pivot?->status ?? false;
+        $this->relationship = $userRider?->pivot->relationship ?? 'parent';
+        $this->status = $userRider?->pivot->status ?? '0';
     }
 
     public function save()
@@ -232,11 +242,13 @@ class Riders extends Component
                 Storage::disk('public')->delete($rider->profile_pic);
             }
             
-            // Only update rider data if we have an approved status
-            if ($this->status) {
+            // Check current user's status with this rider
+            $userRider = Auth::user()->riders()->find($rider->id);
+            if ($userRider && $userRider->pivot->status === 1) {
                 $rider->update($riderData);
             }
         } else {
+            // Create new rider
             $rider = Rider::create($riderData);
         }
 
@@ -244,7 +256,7 @@ class Riders extends Component
         Auth::user()->riders()->syncWithoutDetaching([
             $rider->id => [
                 'relationship' => $this->relationship,
-                'status' => $this->selectedRider ? $this->status : false // Keep existing status or set to false for new
+                'status' => $this->status
             ]
         ]);
 

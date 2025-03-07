@@ -28,6 +28,10 @@ class Rider extends Model
         'class' => 'array'
     ];
 
+    protected $pivotCasts = [
+        'status' => 'string'
+    ];
+
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'rideables')

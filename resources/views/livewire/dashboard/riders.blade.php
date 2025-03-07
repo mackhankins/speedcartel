@@ -14,7 +14,6 @@
                 </h2>
 
                 <form wire:submit="save" class="space-y-6">
-                    {{ var_dump($status) }}
                     <div class="grid grid-cols-1 gap-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="relative">
@@ -104,75 +103,34 @@
                             />
 
                             <div class="md:col-span-2">
-                                <x-label for="profile_pic" value="Profile Picture" />
-                                <div class="mt-1">
-                                    <div x-data="{
-                                        photoPreview: @if($temp_profile_pic) '{{ Storage::url($temp_profile_pic) }}' @else null @endif,
-                                        isDragging: false,
-                                        handleFiles(event) {
-                                            const file = event.target.files[0] || event.dataTransfer.files[0];
-                                            if (!file) return;
-
-                                            if (!file.type.startsWith('image/')) {
-                                                $wire.dispatch('notify', { message: 'Please upload an image file.', type: 'error' });
-                                                return;
-                                            }
-
-                                            this.photoPreview = URL.createObjectURL(file);
-                                            $wire.upload('profile_pic', file);
-                                        }
-                                    }"
-                                    @profile-pic-reset.window="photoPreview = null"
-                                    >
-                                        <div class="relative">
-                                            <input
-                                                type="file"
-                                                class="sr-only"
-                                                wire:model="profile_pic"
-                                                x-ref="photo"
-                                                @change="handleFiles($event)"
-                                                accept="image/*"
-                                            >
-
-                                            <div
-                                                @click="$refs.photo.click()"
-                                                @dragover.prevent="isDragging = true"
-                                                @dragleave.prevent="isDragging = false"
-                                                @drop.prevent="isDragging = false; handleFiles($event)"
-                                                :class="{ 'border-cartel-red bg-red-50 dark:bg-red-900/20': isDragging }"
-                                                class="relative flex justify-center px-6 py-10 cursor-pointer border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-xl hover:border-cartel-red dark:hover:border-cartel-red transition-colors duration-200"
-                                            >
-                                                <template x-if="!photoPreview">
-                                                    <div class="text-center">
-                                                        <x-icon name="camera" class="mx-auto h-12 w-12 text-gray-400" />
-                                                        <div class="mt-4 flex text-sm text-gray-600 dark:text-gray-400">
-                                                            <span class="relative cursor-pointer rounded-md font-medium text-cartel-red hover:text-red-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-cartel-red">
-                                                                Upload a file
-                                                            </span>
-                                                            <p class="pl-1">or drag and drop</p>
-                                                        </div>
-                                                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                            PNG, JPG, GIF up to 5MB
-                                                        </p>
-                                                    </div>
-                                                </template>
-
-                                                <template x-if="photoPreview">
-                                                    <div class="absolute inset-0 flex items-center justify-center rounded-xl overflow-hidden">
-                                                        <img :src="photoPreview" class="max-h-full" />
-                                                        <button
-                                                            @click.stop="photoPreview = null; $wire.set('profile_pic', null); $wire.set('temp_profile_pic', null)"
-                                                            type="button"
-                                                            class="absolute top-2 right-2 p-1 rounded-full bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                                        >
-                                                            <x-icon name="x-mark" class="w-4 h-4" />
-                                                        </button>
-                                                    </div>
-                                                </template>
-                                            </div>
+                                <div class="mt-4">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {{ __('Profile Photo') }}
+                                    </label>
+                                    
+                                    <livewire:components.profile-picture-cropper
+                                        wire:key="rider-profile-pic-{{ time() }}-{{ $editingRider ? $selectedRider->id : 'create' }}"
+                                        :storagePath="'riders'"
+                                        :aspectRatio="1"
+                                        :viewportWidth="400"
+                                        :viewportHeight="400"
+                                        :filePrefix="'rider_'"
+                                        :cropperType="'square'"
+                                        :previewSize="24"
+                                        :model="$selectedRider"
+                                        :buttonText="$selectedRider && $selectedRider->profile_pic ? 'Change Photo' : 'Upload Photo'"
+                                        :disabled="($selectedRider && !$editingRider) || ($editingRider && $status == 0)"
+                                    />
+                                    
+                                    <div wire:loading wire:target="photo">
+                                        <div class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                            {{ __('Uploading...') }}
                                         </div>
                                     </div>
-                                    <x-error for="profile_pic" class="mt-2" />
+                                    
+                                    @error('profile_pic')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -247,4 +205,10 @@
             </div>
         @endif
     </div>
+    
+    @push('scripts')
+    <script>
+        // This space is available for any future scripts
+    </script>
+    @endpush
 </div>

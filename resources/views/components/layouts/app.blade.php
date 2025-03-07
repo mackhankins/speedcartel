@@ -7,6 +7,7 @@
     <title>{{ config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/theme.js'])
     @livewireStyles
+    @stack('styles')
 </head>
 
 <body class="min-h-screen bg-gray-50 dark:bg-darker-gray text-gray-900 dark:text-white">
@@ -20,6 +21,7 @@
     <x-dialog z-index="z-50" blur="md" />
     @wireUiScripts
     @livewireScripts
+    @stack('scripts')
 </body>
 
 </html>

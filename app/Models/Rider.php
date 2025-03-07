@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Support\Facades\Storage;
+use App\Traits\HasProfilePhoto;
 
 class Rider extends Model
 {
-    use HasFactory;
+    use HasFactory, HasProfilePhoto;
 
     protected $fillable = [
         'firstname',
@@ -31,6 +33,21 @@ class Rider extends Model
     protected $pivotCasts = [
         'status' => 'string'
     ];
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        // Delete the profile picture when the rider is deleted
+        static::deleting(function ($rider) {
+            if ($rider->profile_pic && method_exists($rider, 'deleteProfilePhoto')) {
+                $rider->deleteProfilePhoto();
+            }
+        });
+    }
 
     public function users(): BelongsToMany
     {

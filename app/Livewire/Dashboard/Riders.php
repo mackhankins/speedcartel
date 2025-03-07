@@ -9,7 +9,11 @@ use Livewire\Attributes\Title;
 use Livewire\WithFileUploads;
 use WireUi\Traits\WireUiActions;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 
+/**
+ * @property-read User $user
+ */
 #[Title('Manage Riders')]
 class Riders extends Component
 {
@@ -30,9 +34,20 @@ class Riders extends Component
     public $class = [];
     public $skill_level = '';
     public $profile_pic;
-    public $temp_profile_pic;
+    public $temp_profile_pic = null;
     public $relationship = 'parent';
     public $status = 0;
+    
+    // Croppie related properties
+    public $showCroppieModal = false;
+    public $croppedImage = null;
+    public $tempImageUrl = null;
+    
+    // Helper property for linter
+    protected $user;
+
+    // Add a listener for the profile-picture-saved event
+    protected $listeners = ['profile-picture-saved' => 'handleProfilePictureSaved'];
 
     protected $rules = [
         'firstname' => 'required|min:2',
@@ -51,9 +66,19 @@ class Riders extends Component
         $this->loadRiders();
     }
 
+    /**
+     * Get the authenticated user
+     * 
+     * @return \App\Models\User
+     */
+    protected function getUser()
+    {
+        return Auth::user();
+    }
+
     protected function loadRiders()
     {
-        $this->riders = Auth::user()->riders()->get();
+        $this->riders = $this->getUser()->riders()->get();
     }
 
     public function resetForm()
@@ -66,13 +91,16 @@ class Riders extends Component
             'date_of_birth',
             'class',
             'skill_level',
-            'profile_pic',
-            'temp_profile_pic',
             'relationship',
             'showForm',
             'editingRider',
-            'searchResults'
+            'searchResults',
+            'temp_profile_pic'
         ]);
+        
+        // Reset the profile picture cropper
+        $this->dispatch('profile-pic-reset');
+        
         // Set default status to 0 for new riders
         $this->status = 0;
     }
@@ -88,10 +116,13 @@ class Riders extends Component
     public function edit(Rider $rider)
     {
         // Get the current user's relationship with this rider
-        $userRider = Auth::user()->riders()->find($rider->id);
+        $userRider = $this->getUser()->riders()->find($rider->id);
         if (!$userRider) {
             return;
         }
+
+        // Refresh the rider to ensure we have the latest data
+        $rider->refresh();
 
         $this->selectedRider = $rider;
         $this->editingRider = true;
@@ -103,6 +134,10 @@ class Riders extends Component
         $this->skill_level = $rider->skill_level;
         $this->relationship = $userRider->pivot->relationship ?? 'parent';
         $this->status = $userRider->pivot->status ?? '0';
+        
+        // Store the profile_pic path in temp_profile_pic as well
+        $this->temp_profile_pic = $rider->profile_pic;
+        
         $this->showForm = true;
     }
 
@@ -156,7 +191,7 @@ class Riders extends Component
         $rider = Rider::findOrFail($riderId);
         
         // Check if the rider is already associated with the user
-        $existingRider = Auth::user()->riders()->find($riderId);
+        $existingRider = $this->getUser()->riders()->find($riderId);
         
         if ($existingRider) {
             // If rider exists, load it for editing
@@ -185,7 +220,7 @@ class Riders extends Component
         $rider = Rider::findOrFail($riderId);
         
         // If the rider is already associated with the user, load for editing
-        if ($existingRider = Auth::user()->riders()->find($riderId)) {
+        if ($existingRider = $this->getUser()->riders()->find($riderId)) {
             $this->selectedRider = $existingRider;
             $this->loadRiderData($existingRider);
             $this->showForm = true;
@@ -204,7 +239,7 @@ class Riders extends Component
     protected function loadRiderData($rider)
     {
         // Get the current user's relationship with this rider
-        $userRider = Auth::user()->riders()->find($rider->id);
+        $userRider = $this->getUser()->riders()->find($rider->id);
         
         $this->firstname = $rider->firstname;
         $this->lastname = $rider->lastname;
@@ -214,11 +249,46 @@ class Riders extends Component
         $this->skill_level = $rider->skill_level;
         $this->relationship = $userRider?->pivot->relationship ?? 'parent';
         $this->status = $userRider?->pivot->status ?? '0';
+        
+        // Store the profile_pic path in temp_profile_pic as well
+        $this->temp_profile_pic = $rider->profile_pic;
+        
+        // Log the profile_pic value for debugging
+        \Log::info('Loading rider data with profile_pic: ' . $rider->profile_pic);
+        \Log::info('Profile photo URL: ' . $rider->profile_photo_url);
+    }
+
+    /**
+     * Handle the profile-picture-saved event
+     */
+    public function handleProfilePictureSaved($path)
+    {
+        \Log::info('Profile picture saved event received with path: ' . $path);
+        $this->temp_profile_pic = $path;
+        
+        // If we're editing a rider, update it directly
+        if ($this->selectedRider && $this->editingRider) {
+            $this->selectedRider->profile_pic = $path;
+            $this->selectedRider->save();
+            
+            // Refresh the rider to ensure we have the latest data
+            $this->selectedRider->refresh();
+            
+            \Log::info('Updated rider profile_pic directly: ' . $path);
+            \Log::info('Rider profile_pic after update: ' . $this->selectedRider->profile_pic);
+            \Log::info('Rider profile_photo_url after update: ' . $this->selectedRider->profile_photo_url);
+        }
     }
 
     public function save()
     {
         $this->validate();
+
+        \Log::info('Saving rider', [
+            'editing' => $this->editingRider,
+            'selectedRider' => $this->selectedRider ? $this->selectedRider->id : null,
+            'temp_profile_pic' => $this->temp_profile_pic
+        ]);
 
         $riderData = [
             'firstname' => $this->firstname,
@@ -228,37 +298,43 @@ class Riders extends Component
             'class' => $this->class,
             'skill_level' => $this->skill_level,
         ];
-
-        // Handle profile picture upload
-        if ($this->profile_pic) {
-            $riderData['profile_pic'] = $this->profile_pic->store('profile-pics', 'public');
+        
+        // Add the profile_pic to the rider data if we have a temporary path
+        if ($this->temp_profile_pic) {
+            $riderData['profile_pic'] = $this->temp_profile_pic;
+            \Log::info('Adding profile_pic to rider data: ' . $this->temp_profile_pic);
         }
 
         if ($this->selectedRider) {
             $rider = $this->selectedRider;
             
-            // Delete old profile pic if uploading a new one
-            if ($this->profile_pic && $rider->profile_pic) {
-                Storage::disk('public')->delete($rider->profile_pic);
-            }
-            
             // Check current user's status with this rider
-            $userRider = Auth::user()->riders()->find($rider->id);
+            $userRider = $this->getUser()->riders()->find($rider->id);
             if ($userRider && $userRider->pivot->status === 1) {
+                // Log the rider data before update
+                \Log::info('Updating rider with data: ', $riderData);
+                
                 $rider->update($riderData);
+                
+                // Verify the rider was updated
+                $rider->refresh();
+                \Log::info('Rider after update - ID: ' . $rider->id . ', profile_pic: ' . $rider->profile_pic);
             }
         } else {
             // Create new rider
+            \Log::info('Creating new rider with data: ', $riderData);
             $rider = Rider::create($riderData);
+            \Log::info('Created new rider with ID: ' . $rider->id . ', profile_pic: ' . $rider->profile_pic);
         }
 
         // Attach or update the relationship with the user
-        Auth::user()->riders()->syncWithoutDetaching([
+        $this->getUser()->riders()->syncWithoutDetaching([
             $rider->id => [
                 'relationship' => $this->relationship,
                 'status' => $this->status
             ]
         ]);
+        \Log::info('Updated rider relationship for user: ' . $this->getUser()->id . ' with rider: ' . $rider->id);
 
         $this->notification()->success(
             $title = $this->selectedRider ? 'Rider Updated' : 'Rider Added',
@@ -294,23 +370,32 @@ class Riders extends Component
 
         if ($userCount <= 1) {
             // If this is the only user, delete the rider completely
+            
+            // Delete the profile picture if it exists
+            if ($rider->profile_pic) {
+                // Use the trait method if available
+                if (method_exists($rider, 'deleteProfilePhoto')) {
+                    $rider->deleteProfilePhoto();
+                } else {
+                    // Fallback to manual deletion
+                    $path = $rider->profile_pic;
+                    if (Storage::disk('public')->exists($path)) {
+                        Storage::disk('public')->delete($path);
+                    }
+                }
+            }
+            
+            // Now delete the rider
             $rider->delete();
             $message = 'Rider deleted successfully';
         } else {
             // If other users are associated, just detach from current user
-            Auth::user()->riders()->detach($rider->id);
+            $this->getUser()->riders()->detach($rider->id);
             $message = 'Rider removed from your list';
         }
 
         $this->dispatch('notify', message: $message);
         $this->loadRiders();
-    }
-
-    public function updatedProfilePic()
-    {
-        if ($this->profile_pic) {
-            $this->temp_profile_pic = $this->profile_pic->store('temp', 'public');
-        }
     }
 
     public function render()

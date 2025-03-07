@@ -16,7 +16,6 @@ return new class extends Migration {
             $table->string('class');
             $table->string('skill_level');
             $table->string('profile_pic')->nullable();
-            $table->string('blood_type')->nullable();
             $table->timestamps();
         });
 
@@ -25,7 +24,7 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('rider_id')->constrained()->onDelete('cascade');
             $table->string('relationship');
-            $table->string('status')->default('pending');
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }

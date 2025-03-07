@@ -20,8 +20,7 @@ class Rider extends Model
         'date_of_birth',
         'class',
         'skill_level',
-        'profile_pic',
-        'blood_type',
+        'profile_pic'
     ];
 
     protected $casts = [

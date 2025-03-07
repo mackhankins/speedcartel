@@ -22,6 +22,7 @@
                                     label="First Name" 
                                     required 
                                     autocomplete="off"
+                                    :disabled="$selectedRider && !$status"
                                 />
                                 @if(!$editingRider && count($searchResults) > 0)
                                     <div class="absolute z-50 w-full mt-1 bg-white dark:bg-darker-gray rounded-md shadow-lg border border-gray-200 dark:border-light-gray">
@@ -41,11 +42,25 @@
                                 @endif
                             </div>
 
-                            <x-input wire:model="lastname" label="Last Name" required />
+                            <x-input 
+                                wire:model="lastname" 
+                                label="Last Name" 
+                                required 
+                                :disabled="$selectedRider && !$status"
+                            />
 
-                            <x-input wire:model="nickname" label="Nickname" />
+                            <x-input 
+                                wire:model="nickname" 
+                                label="Nickname"
+                                :disabled="$selectedRider && !$status"
+                            />
 
-                            <x-input wire:model="date_of_birth" type="date" label="Date of Birth" />
+                            <x-input 
+                                wire:model="date_of_birth" 
+                                type="date" 
+                                label="Date of Birth"
+                                :disabled="$selectedRider && !$status"
+                            />
 
                             <x-select
                                 wire:model="class"
@@ -57,6 +72,7 @@
                                 ]"
                                 option-label="name"
                                 option-value="value"
+                                :disabled="$selectedRider && !$status"
                             />
 
                             <x-select
@@ -70,6 +86,7 @@
                                 ]"
                                 option-label="name"
                                 option-value="value"
+                                :disabled="$selectedRider && !$status"
                             />
 
                             <x-select

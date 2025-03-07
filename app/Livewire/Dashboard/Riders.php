@@ -32,7 +32,7 @@ class Riders extends Component
     public $profile_pic;
     public $temp_profile_pic;
     public $relationship = 'parent';
-    public $status = 'pending';
+    public $status = false;
 
     protected $rules = [
         'firstname' => 'required|min:2',
@@ -43,6 +43,7 @@ class Riders extends Component
         'skill_level' => 'nullable|in:beginner,intermediate,expert,pro',
         'profile_pic' => 'nullable|image|max:5120|dimensions:min_width=400,min_height=300', // 5MB max
         'relationship' => 'required|in:parent,guardian,self,other',
+        'status' => 'boolean'
     ];
 
     public function mount()
@@ -72,6 +73,8 @@ class Riders extends Component
             'editingRider',
             'searchResults'
         ]);
+        // Set default status to false for new riders
+        $this->status = false;
     }
 
     public function create()
@@ -92,6 +95,7 @@ class Riders extends Component
         $this->date_of_birth = $rider->date_of_birth->format('Y-m-d');
         $this->class = $rider->class ?? [];
         $this->skill_level = $rider->skill_level;
+        $this->status = $rider->status;
         $this->showForm = true;
     }
 
@@ -161,8 +165,8 @@ class Riders extends Component
             $this->date_of_birth = $rider->date_of_birth->format('Y-m-d');
             $this->class = $rider->class ?? [];
             $this->skill_level = $rider->skill_level;
+            $this->status = false; // New associations start with status 0
             $this->editingRider = false;
-            $this->status = 'pending';
         }
         
         // Clear search results
@@ -187,7 +191,7 @@ class Riders extends Component
         $this->showForm = true;
         
         // Reset the status to pending for new associations
-        $this->status = 'pending';
+        $this->status = false;
     }
 
     protected function loadRiderData($rider)
@@ -199,6 +203,7 @@ class Riders extends Component
         $this->class = $rider->class ?? [];
         $this->skill_level = $rider->skill_level;
         $this->relationship = $rider->pivot?->relationship ?? 'parent';
+        $this->status = $rider->pivot?->status ?? false;
     }
 
     public function save()
@@ -227,7 +232,10 @@ class Riders extends Component
                 Storage::disk('public')->delete($rider->profile_pic);
             }
             
-            $rider->update($riderData);
+            // Only update rider data if we have an approved status
+            if ($this->status) {
+                $rider->update($riderData);
+            }
         } else {
             $rider = Rider::create($riderData);
         }
@@ -236,7 +244,7 @@ class Riders extends Component
         Auth::user()->riders()->syncWithoutDetaching([
             $rider->id => [
                 'relationship' => $this->relationship,
-                'status' => $this->selectedRider && $rider->pivot ? $rider->pivot->status : 'pending'
+                'status' => $this->selectedRider ? $this->status : false // Keep existing status or set to false for new
             ]
         ]);
 
@@ -269,8 +277,21 @@ class Riders extends Component
 
     public function delete(Rider $rider)
     {
-        $rider->delete();
-        $this->dispatch('notify', message: 'Rider deleted successfully');
+        // Get the count of users associated with this rider
+        $userCount = $rider->users()->count();
+
+        if ($userCount <= 1) {
+            // If this is the only user, delete the rider completely
+            $rider->delete();
+            $message = 'Rider deleted successfully';
+        } else {
+            // If other users are associated, just detach from current user
+            Auth::user()->riders()->detach($rider->id);
+            $message = 'Rider removed from your list';
+        }
+
+        $this->dispatch('notify', message: $message);
+        $this->loadRiders();
     }
 
     public function updatedProfilePic()

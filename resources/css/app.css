@@ -1,5 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
 
+/* Dark mode styles to prevent flash */
+:root {
+    color-scheme: light;
+}
+
+.dark {
+    color-scheme: dark;
+}
+
+.dark body {
+    background-color: #1a1a1a !important;
+    color: white !important;
+}
+
+.dark .bg-white {
+    background-color: #1a1a1a !important;
+}
+
+.dark .bg-gray-50 {
+    background-color: #1a1a1a !important;
+}
+
+.dark .bg-gray-100 {
+    background-color: #2a2a2a !important;
+}
+
+.dark .text-gray-900 {
+    color: white !important;
+}
+
+.dark .border-gray-200 {
+    border-color: #2a2a2a !important;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -31,4 +65,9 @@
 
 .dark .default-profile-image {
     background-color: #374151;
+}
+
+/* Alpine.js Utilities */
+[x-cloak] {
+    display: none !important;
 }

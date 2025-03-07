@@ -24,7 +24,13 @@ class TrackResource extends Resource
 
     protected static ?string $slug = 'tracks';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-map-pin';
+
+    protected static ?string $navigationGroup = 'Athlete Management';
+
+    protected static ?string $navigationLabel = 'Tracks';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

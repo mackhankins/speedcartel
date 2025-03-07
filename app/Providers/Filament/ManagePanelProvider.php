@@ -104,7 +104,9 @@ class ManagePanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label('User Management')
+                ->label('Athlete Management'),
+                NavigationGroup::make()
+                    ->label('User Management'),
             ])
             ->navigationItems([
                 NavigationItem::make('Roles')

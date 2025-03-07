@@ -25,6 +25,7 @@ class Riders extends Component
     public $selectedRider = null;
     public $riders = [];
     public $editingRider = false;
+    public $tracks = [];
 
     // Form fields
     public $firstname = '';
@@ -37,6 +38,14 @@ class Riders extends Component
     public $temp_profile_pic = null;
     public $relationship = 'parent';
     public $status = 0;
+    public $home_track = 0;
+    public $social_profiles = [
+        'instagram' => '',
+        'facebook' => '',
+        'twitter' => '',
+        'tiktok' => '',
+        'youtube' => ''
+    ];
     
     // Croppie related properties
     public $showCroppieModal = false;
@@ -58,12 +67,22 @@ class Riders extends Component
         'skill_level' => 'nullable|in:beginner,intermediate,expert,pro',
         'profile_pic' => 'nullable|image|max:5120|dimensions:min_width=400,min_height=300', // 5MB max
         'relationship' => 'required|in:parent,guardian,self,other',
-        'status' => 'integer|in:0,1'
+        'status' => 'integer|in:0,1',
+        'home_track' => 'nullable',
+        'social_profiles.instagram' => 'nullable|string|max:255',
+        'social_profiles.facebook' => 'nullable|string|max:255',
+        'social_profiles.twitter' => 'nullable|string|max:255',
+        'social_profiles.tiktok' => 'nullable|string|max:255',
+        'social_profiles.youtube' => 'nullable|string|max:255'
     ];
 
     public function mount()
     {
         $this->loadRiders();
+        $this->loadTracks();
+        
+        // Initialize home_track to null
+        $this->home_track = null;
     }
 
     /**
@@ -81,6 +100,20 @@ class Riders extends Component
         $this->riders = $this->getUser()->riders()->get();
     }
 
+    protected function loadTracks()
+    {
+        // Start with a "None" option
+        $this->tracks = [['name' => 'None', 'value' => null]];
+        
+        // Add all tracks from the database
+        $dbTracks = \App\Models\Track::all()->map(function($track) {
+            return ['name' => $track->name, 'value' => $track->id];
+        })->toArray();
+        
+        // Merge the "None" option with the tracks from the database
+        $this->tracks = array_merge($this->tracks, $dbTracks);
+    }
+
     public function resetForm()
     {
         $this->reset([
@@ -95,14 +128,24 @@ class Riders extends Component
             'showForm',
             'editingRider',
             'searchResults',
-            'temp_profile_pic'
+            'temp_profile_pic',
+            'home_track',
+            'social_profiles'
         ]);
         
         // Reset the profile picture cropper
         $this->dispatch('profile-pic-reset');
         
-        // Set default status to 0 for new riders
+        // Set default values
         $this->status = 0;
+        $this->home_track = null;
+        $this->social_profiles = [
+            'instagram' => '',
+            'facebook' => '',
+            'twitter' => '',
+            'tiktok' => '',
+            'youtube' => ''
+        ];
     }
 
     public function create()
@@ -134,6 +177,22 @@ class Riders extends Component
         $this->skill_level = $rider->skill_level;
         $this->relationship = $userRider->pivot->relationship ?? 'parent';
         $this->status = $userRider->pivot->status ?? '0';
+        
+        // Set home_track, ensuring it's null if empty
+        $this->home_track = $rider->home_track ?: null;
+        
+        // Log the home_track value for debugging
+        \Log::info('Editing rider with home_track: ' . $rider->home_track);
+        \Log::info('Home track type: ' . gettype($rider->home_track));
+        \Log::info('Available tracks: ' . json_encode($this->tracks));
+        
+        $this->social_profiles = $rider->social_profiles ?? [
+            'instagram' => '',
+            'facebook' => '',
+            'twitter' => '',
+            'tiktok' => '',
+            'youtube' => ''
+        ];
         
         // Store the profile_pic path in temp_profile_pic as well
         $this->temp_profile_pic = $rider->profile_pic;
@@ -250,12 +309,19 @@ class Riders extends Component
         $this->relationship = $userRider?->pivot->relationship ?? 'parent';
         $this->status = $userRider?->pivot->status ?? '0';
         
+        // Set home_track, ensuring it's null if empty
+        $this->home_track = $rider->home_track ?: null;
+        
+        $this->social_profiles = $rider->social_profiles ?? [
+            'instagram' => '',
+            'facebook' => '',
+            'twitter' => '',
+            'tiktok' => '',
+            'youtube' => ''
+        ];
+        
         // Store the profile_pic path in temp_profile_pic as well
         $this->temp_profile_pic = $rider->profile_pic;
-        
-        // Log the profile_pic value for debugging
-        \Log::info('Loading rider data with profile_pic: ' . $rider->profile_pic);
-        \Log::info('Profile photo URL: ' . $rider->profile_photo_url);
     }
 
     /**
@@ -284,10 +350,16 @@ class Riders extends Component
     {
         $this->validate();
 
+        // Convert empty string or "null" string to actual null for home_track
+        if ($this->home_track === '' || $this->home_track === 'null') {
+            $this->home_track = null;
+        }
+
         \Log::info('Saving rider', [
             'editing' => $this->editingRider,
             'selectedRider' => $this->selectedRider ? $this->selectedRider->id : null,
-            'temp_profile_pic' => $this->temp_profile_pic
+            'temp_profile_pic' => $this->temp_profile_pic,
+            'home_track' => $this->home_track
         ]);
 
         $riderData = [
@@ -297,7 +369,12 @@ class Riders extends Component
             'date_of_birth' => $this->date_of_birth,
             'class' => $this->class,
             'skill_level' => $this->skill_level,
+            'home_track' => $this->home_track,
+            'social_profiles' => $this->social_profiles
         ];
+        
+        // Log the home_track value being saved
+        \Log::info('Home track value being saved: ' . ($this->home_track === null ? 'null' : $this->home_track));
         
         // Add the profile_pic to the rider data if we have a temporary path
         if ($this->temp_profile_pic) {
@@ -401,7 +478,8 @@ class Riders extends Component
     public function render()
     {
         return view('livewire.dashboard.riders', [
-            'riders' => $this->riders
+            'riders' => $this->riders,
+            'tracks' => $this->tracks
         ])->layout('components.layouts.dashboard');
     }
 }

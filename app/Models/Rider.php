@@ -22,12 +22,15 @@ class Rider extends Model
         'date_of_birth',
         'class',
         'skill_level',
-        'profile_pic'
+        'profile_pic',
+        'home_track',
+        'social_profiles'
     ];
 
     protected $casts = [
         'date_of_birth' => 'date',
-        'class' => 'array'
+        'class' => 'array',
+        'social_profiles' => 'array'
     ];
 
     protected $pivotCasts = [
@@ -67,5 +70,21 @@ class Rider extends Model
             $query->where('firstname', 'like', "%{$term}%")
                   ->orWhere('lastname', 'like', "%{$term}%");
         });
+    }
+
+    /**
+     * Get the track that is the rider's home track.
+     */
+    public function homeTrack()
+    {
+        return $this->belongsTo(Track::class, 'home_track');
+    }
+
+    /**
+     * Get the home track name attribute.
+     */
+    public function getHomeTrackNameAttribute()
+    {
+        return $this->homeTrack ? $this->homeTrack->name : null;
     }
 }

@@ -77,35 +77,44 @@
             @forelse($riders as $rider)
                 <div class="bg-white dark:bg-light-gray rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col">
                     <!-- Rider Image -->
-                    <div class="relative h-40 sm:h-48 md:h-56 lg:h-64 bg-gray-200 dark:bg-gray-700">
-                        @if($rider->profile_pic)
-                            <img 
-                                src="{{ $rider->profile_photo_url }}" 
-                                alt="{{ $rider->full_name }}" 
-                                class="w-full h-full object-cover"
-                            >
-                        @else
-                            <div class="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-700">
-                                <svg class="w-16 h-16 sm:w-20 sm:h-20 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                                </svg>
-                            </div>
-                        @endif
-                        
-                        <!-- Skill Level Badge -->
-                        @if($rider->skill_level)
-                            <div class="absolute top-4 right-4">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                    {{ $rider->skill_level === 'novice' ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : '' }}
-                                    {{ $rider->skill_level === 'intermediate' ? 'bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100' : '' }}
-                                    {{ $rider->skill_level === 'expert' ? 'bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100' : '' }}
-                                    {{ $rider->skill_level === 'pro' ? 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100' : '' }}
-                                ">
-                                    {{ ucfirst($rider->skill_level) }}
+                    <a href="{{ route('team.rider', $rider) }}" class="group relative block">
+                        <div class="relative h-40 sm:h-48 md:h-56 lg:h-64 bg-gray-200 dark:bg-gray-700">
+                            @if($rider->profile_pic)
+                                <img 
+                                    src="{{ $rider->profile_photo_url }}" 
+                                    alt="{{ $rider->full_name }}" 
+                                    class="w-full h-full object-cover"
+                                >
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-700">
+                                    <svg class="w-16 h-16 sm:w-20 sm:h-20 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                </div>
+                            @endif
+
+                            <!-- View Profile Overlay -->
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                <span class="text-white font-orbitron text-lg tracking-wider transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                    VIEW PROFILE
                                 </span>
                             </div>
-                        @endif
-                    </div>
+                            
+                            <!-- Skill Level Badge -->
+                            @if($rider->skill_level)
+                                <div class="absolute top-4 right-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {{ $rider->skill_level === 'novice' ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : '' }}
+                                        {{ $rider->skill_level === 'intermediate' ? 'bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100' : '' }}
+                                        {{ $rider->skill_level === 'expert' ? 'bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100' : '' }}
+                                        {{ $rider->skill_level === 'pro' ? 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100' : '' }}
+                                    ">
+                                        {{ ucfirst($rider->skill_level) }}
+                                    </span>
+                                </div>
+                            @endif
+                        </div>
+                    </a>
                     
                     <!-- Rider Info -->
                     <div class="p-3 sm:p-4 md:p-5 flex-grow">

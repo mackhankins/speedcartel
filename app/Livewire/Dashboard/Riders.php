@@ -4,12 +4,14 @@ namespace App\Livewire\Dashboard;
 
 use Livewire\Component;
 use App\Models\Rider;
+use App\Models\Plate;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
 use Livewire\WithFileUploads;
 use WireUi\Traits\WireUiActions;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
+use Illuminate\Validation\Rule;
 
 /**
  * @property-read User $user
@@ -47,6 +49,12 @@ class Riders extends Component
         'youtube' => ''
     ];
     
+    // Plates array
+    public $plates = [];
+    
+    // Current plate index
+    public $current_plate_index = 0;
+    
     // Croppie related properties
     public $showCroppieModal = false;
     public $croppedImage = null;
@@ -58,23 +66,30 @@ class Riders extends Component
     // Add a listener for the profile-picture-saved event
     protected $listeners = ['profile-picture-saved' => 'handleProfilePictureSaved'];
 
-    protected $rules = [
-        'firstname' => 'required|min:2',
-        'lastname' => 'required|min:2',
-        'nickname' => 'nullable|string',
-        'date_of_birth' => 'required|date|before:today',
-        'class' => 'nullable|array',
-        'skill_level' => 'nullable|in:novice,intermediate,expert,pro',
-        'profile_pic' => 'nullable|image|max:5120|dimensions:min_width=400,min_height=300', // 5MB max
-        'relationship' => 'required|in:parent,guardian,self,other',
-        'status' => 'integer|in:0,1',
-        'home_track' => 'nullable',
-        'social_profiles.instagram' => 'nullable|string|max:255',
-        'social_profiles.facebook' => 'nullable|string|max:255',
-        'social_profiles.twitter' => 'nullable|string|max:255',
-        'social_profiles.tiktok' => 'nullable|string|max:255',
-        'social_profiles.youtube' => 'nullable|string|max:255'
-    ];
+    protected function rules()
+    {
+        return [
+            'firstname' => 'required|min:2',
+            'lastname' => 'required|min:2',
+            'nickname' => 'nullable|string',
+            'date_of_birth' => 'required|date|before:today',
+            'class' => 'nullable|array',
+            'skill_level' => 'nullable|in:novice,intermediate,expert,pro',
+            'profile_pic' => 'nullable|image|max:5120|dimensions:min_width=400,min_height=300', // 5MB max
+            'relationship' => 'required|in:parent,guardian,self,other',
+            'status' => 'integer|in:0,1',
+            'home_track' => 'nullable',
+            'social_profiles.instagram' => 'nullable|string|max:255',
+            'social_profiles.facebook' => 'nullable|string|max:255',
+            'social_profiles.twitter' => 'nullable|string|max:255',
+            'social_profiles.tiktok' => 'nullable|string|max:255',
+            'social_profiles.youtube' => 'nullable|string|max:255',
+            'plates' => 'nullable|array',
+            'plates.*.type' => ['nullable', 'required_with:plates.*.number,plates.*.year', Rule::in(collect(\App\Models\Plate::$typeOptions)->pluck('value')->toArray())],
+            'plates.*.number' => ['nullable', 'required_with:plates.*.type,plates.*.year', 'string'],
+            'plates.*.year' => ['nullable', 'required_with:plates.*.type,plates.*.number', 'integer', 'min:' . (date('Y') - 25), 'max:' . date('Y')]
+        ];
+    }
 
     public function mount()
     {
@@ -83,6 +98,13 @@ class Riders extends Component
         
         // Initialize home_track to null
         $this->home_track = null;
+        
+        // Initialize plates array with one empty plate
+        $this->plates = [[
+            'type' => '',
+            'number' => '',
+            'year' => date('Y')
+        ]];
     }
 
     /**
@@ -130,7 +152,9 @@ class Riders extends Component
             'searchResults',
             'temp_profile_pic',
             'home_track',
-            'social_profiles'
+            'social_profiles',
+            'plates',
+            'current_plate_index'
         ]);
         
         // Reset the profile picture cropper
@@ -146,6 +170,13 @@ class Riders extends Component
             'tiktok' => '',
             'youtube' => ''
         ];
+        
+        // Initialize plates array with one empty plate
+        $this->plates = [[
+            'type' => '',
+            'number' => '',
+            'year' => date('Y')
+        ]];
     }
 
     public function create()
@@ -193,6 +224,28 @@ class Riders extends Component
             'tiktok' => '',
             'youtube' => ''
         ];
+        
+        // Load plates
+        $this->plates = $rider->plates()->get()->map(function($plate, $index) {
+            if ($plate->is_current) {
+                $this->current_plate_index = $index;
+            }
+            return [
+                'type' => $plate->type,
+                'number' => $plate->number,
+                'year' => $plate->year ?? date('Y')
+            ];
+        })->toArray();
+        
+        // Ensure there's at least one empty plate form
+        if (empty($this->plates)) {
+            $this->plates = [[
+                'type' => '',
+                'number' => '',
+                'year' => date('Y')
+            ]];
+            $this->current_plate_index = 0;
+        }
         
         // Store the profile_pic path in temp_profile_pic as well
         $this->temp_profile_pic = $rider->profile_pic;
@@ -320,6 +373,29 @@ class Riders extends Component
             'youtube' => ''
         ];
         
+        // Load plates
+        $plates = $rider->plates()->get();
+        if ($plates->isNotEmpty()) {
+            $this->plates = $plates->map(function($plate, $index) {
+                if ($plate->is_current) {
+                    $this->current_plate_index = $index;
+                }
+                return [
+                    'type' => $plate->type,
+                    'number' => $plate->number,
+                    'year' => $plate->year ?? date('Y')
+                ];
+            })->toArray();
+        } else {
+            // Initialize with one empty plate
+            $this->plates = [[
+                'type' => '',
+                'number' => '',
+                'year' => date('Y')
+            ]];
+            $this->current_plate_index = 0;
+        }
+        
         // Store the profile_pic path in temp_profile_pic as well
         $this->temp_profile_pic = $rider->profile_pic;
     }
@@ -343,6 +419,30 @@ class Riders extends Component
             \Log::info('Updated rider profile_pic directly: ' . $path);
             \Log::info('Rider profile_pic after update: ' . $this->selectedRider->profile_pic);
             \Log::info('Rider profile_photo_url after update: ' . $this->selectedRider->profile_photo_url);
+        }
+    }
+
+    public function addPlate()
+    {
+        $this->plates[] = [
+            'type' => '',
+            'number' => '',
+            'year' => date('Y')
+        ];
+    }
+
+    public function removePlate($index)
+    {
+        unset($this->plates[$index]);
+        $this->plates = array_values($this->plates);
+        
+        // Ensure there's at least one plate form
+        if (empty($this->plates)) {
+            $this->plates = [
+                'type' => '',
+                'number' => '',
+                'year' => date('Y')
+            ];
         }
     }
 
@@ -393,6 +493,19 @@ class Riders extends Component
                 
                 $rider->update($riderData);
                 
+                // Update plates
+                $rider->plates()->delete(); // Remove existing plates
+                foreach ($this->plates as $index => $plateData) {
+                    if (!empty($plateData['type']) && !empty($plateData['number'])) {
+                        $rider->plates()->create([
+                            'type' => $plateData['type'],
+                            'number' => $plateData['number'],
+                            'year' => $plateData['year'] ?? date('Y'),
+                            'is_current' => $index === (int)$this->current_plate_index
+                        ]);
+                    }
+                }
+                
                 // Verify the rider was updated
                 $rider->refresh();
                 \Log::info('Rider after update - ID: ' . $rider->id . ', profile_pic: ' . $rider->profile_pic);
@@ -401,6 +514,19 @@ class Riders extends Component
             // Create new rider
             \Log::info('Creating new rider with data: ', $riderData);
             $rider = Rider::create($riderData);
+            
+            // Add plates
+            foreach ($this->plates as $index => $plateData) {
+                if (!empty($plateData['type']) && !empty($plateData['number'])) {
+                    $rider->plates()->create([
+                        'type' => $plateData['type'],
+                        'number' => $plateData['number'],
+                        'year' => $plateData['year'] ?? date('Y'),
+                        'is_current' => $index === (int)$this->current_plate_index
+                    ]);
+                }
+            }
+            
             \Log::info('Created new rider with ID: ' . $rider->id . ', profile_pic: ' . $rider->profile_pic);
         }
 

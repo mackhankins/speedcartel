@@ -105,4 +105,12 @@ class Rider extends Model
     {
         return $this->homeTrack ? $this->homeTrack->name : null;
     }
+
+    /**
+     * Get the plates associated with the rider.
+     */
+    public function plates()
+    {
+        return $this->hasMany(Plate::class);
+    }
 }

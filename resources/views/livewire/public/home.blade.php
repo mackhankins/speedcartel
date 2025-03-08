@@ -138,62 +138,54 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Rider Card 1 -->
+                    @foreach($featuredRiders as $rider)
                     <div
-                        class="bg-gray-100 dark:bg-darker-gray rounded-lg overflow-hidden shadow-lg border border-gray-200 dark:border-light-gray hover:border-cartel-red transition-all duration-300 transform hover:-translate-y-2">
-                        <img src="https://placehold.co/400x300" alt="Rider 1" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="font-orbitron font-bold text-xl mb-2 text-gray-900 dark:text-white">ALEX
-                                "AFTERBURNER" RODRIGUEZ</h3>
-                            <p class="text-gray-600 dark:text-gray-400 mb-4">Elite Men's Class • 5x National Champion
-                            </p>
+                        class="bg-gray-100 dark:bg-darker-gray rounded-lg overflow-hidden shadow-lg border border-gray-200 dark:border-light-gray hover:border-cartel-red transition-all duration-300 transform hover:-translate-y-2 flex flex-col h-full">
+                        @if($rider->profile_pic)
+                            <img src="{{ $rider->profile_photo_url }}" alt="{{ $rider->full_name }}" class="w-full h-64 object-cover">
+                        @else
+                            <div class="w-full h-64 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                <svg class="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                            </div>
+                        @endif
+                        <div class="p-6 flex flex-col flex-grow">
+                            <div class="flex-grow">
+                                <div class="min-h-[5rem]">
+                                    <h3 class="font-orbitron font-bold text-xl text-gray-900 dark:text-white truncate">
+                                        {{ strtoupper($rider->full_name) }}
+                                    </h3>
+                                    <div class="text-base md:text-lg text-gray-600 dark:text-gray-400 mt-2 h-7 overflow-hidden">
+                                        @if($rider->nickname)
+                                            <span class="text-cartel-red font-medium">{{ $rider->nickname }}</span>
+                                        @else
+                                            <span class="text-gray-400">&nbsp;</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 dark:text-gray-400 mb-4 truncate">
+                                    {{ is_array($rider->class) ? implode(', ', array_map('ucfirst', $rider->class)) : ucfirst($rider->class) }}
+                                    • {{ ucfirst($rider->skill_level) }}
+                                </p>
+                            </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-cartel-red font-orbitron">#SC001</span>
-                                <a href="#"
+                                @if($currentPlate = $rider->plates->first())
+                                    <span class="text-cartel-red font-orbitron">#{{ $currentPlate->number }}</span>
+                                @else
+                                    <span class="text-gray-400 font-orbitron">No plate</span>
+                                @endif
+                                <a href="{{ route('team.rider', $rider->id) }}"
                                     class="text-sm text-gray-900 dark:text-white hover:text-cartel-red dark:hover:text-cartel-red transition">VIEW
                                     PROFILE →</a>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Rider Card 2 -->
-                    <div
-                        class="bg-gray-100 dark:bg-darker-gray rounded-lg overflow-hidden shadow-lg border border-gray-200 dark:border-light-gray hover:border-cartel-red transition-all duration-300 transform hover:-translate-y-2">
-                        <img src="https://placehold.co/400x300" alt="Rider 2" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="font-orbitron font-bold text-xl mb-2 text-gray-900 dark:text-white">SAMANTHA
-                                "SLIPSTREAM" CHEN</h3>
-                            <p class="text-gray-600 dark:text-gray-400 mb-4">Elite Women's Class • World Cup Finalist
-                            </p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-cartel-red font-orbitron">#SC002</span>
-                                <a href="#"
-                                    class="text-sm text-gray-900 dark:text-white hover:text-cartel-red dark:hover:text-cartel-red transition">VIEW
-                                    PROFILE →</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Rider Card 3 -->
-                    <div
-                        class="bg-gray-100 dark:bg-darker-gray rounded-lg overflow-hidden shadow-lg border border-gray-200 dark:border-light-gray hover:border-cartel-red transition-all duration-300 transform hover:-translate-y-2">
-                        <img src="https://placehold.co/400x300" alt="Rider 3" class="w-full h-64 object-cover">
-                        <div class="p-6">
-                            <h3 class="font-orbitron font-bold text-xl mb-2 text-gray-900 dark:text-white">MARCUS
-                                "VELOCITY" JACKSON</h3>
-                            <p class="text-gray-600 dark:text-gray-400 mb-4">Junior Elite • Rising Star</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-cartel-red font-orbitron">#SC003</span>
-                                <a href="#"
-                                    class="text-sm text-gray-900 dark:text-white hover:text-cartel-red dark:hover:text-cartel-red transition">VIEW
-                                    PROFILE →</a>
-                            </div>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
 
                 <div class="text-center mt-12">
-                    <a href="#"
+                    <a href="{{ route('team') }}"
                         class="inline-block bg-transparent hover:bg-gray-200 dark:hover:bg-light-gray text-gray-900 dark:text-white font-orbitron font-bold py-3 px-8 border-2 border-cartel-red rounded-md transition duration-300 ease-in-out">
                         VIEW ALL TEAM MEMBERS
                     </a>

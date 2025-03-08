@@ -12,15 +12,19 @@ use App\Http\Controllers\SocialiteController;
 use App\Livewire\Auth\TwoFactorAuth;
 use App\Livewire\Auth\Profile;
 use App\Livewire\Public\Cart;
+use App\Livewire\Public\Team;
+use App\Livewire\Public\RiderProfile;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use App\Notifications\CustomVerifyEmail;
 use Laravel\Fortify\Fortify;
+use App\Livewire\TeamProfile;
 
 // Public Routes
 Route::get('/', Home::class)->name('home');
-Route::get('/team', \App\Livewire\Public\Team::class)->name('team');
+Route::get('/team', Team::class)->name('team');
+Route::get('/team/rider/{rider}', RiderProfile::class)->name('team.rider');
 Route::get('/races', function() { return view('coming-soon'); })->name('races');
 Route::get('/sponsors', function() { return view('coming-soon'); })->name('sponsors');
 Route::get('/contact', function() { return view('coming-soon'); })->name('contact');

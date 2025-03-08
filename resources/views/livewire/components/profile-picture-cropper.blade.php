@@ -28,15 +28,19 @@
                             this.croppie = null;
                         }
 
+                        // Calculate responsive dimensions
+                        const isMobile = window.innerWidth < 768;
+                        const scale = isMobile ? 0.5 : 1; // 50% size on mobile
+                        
                         this.croppie = new Croppie(img, {
                             viewport: {
-                                width: {{ $viewportWidth }},
-                                height: {{ $viewportHeight }},
+                                width: {{ $viewportWidth }} * scale,
+                                height: {{ $viewportHeight }} * scale,
                                 type: '{{ $cropperType }}'
                             },
                             boundary: {
-                                width: '{{ $boundaryWidth }}',
-                                height: {{ $boundaryHeight }}
+                                width: {{ $boundaryWidth }} * scale,
+                                height: {{ $boundaryHeight }} * scale
                             },
                             enableZoom: true,
                             enableExif: true,
@@ -177,12 +181,12 @@
         </div>
 
         <!-- Cropping UI -->
-        <div x-show="isCropping" class="mt-4 p-6 bg-white dark:bg-darker-gray rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div x-show="isCropping" class="mt-4 p-6 bg-white dark:bg-darker-gray rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 w-full md:max-w-2xl lg:max-w-4xl mx-auto">
             <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 {{ $cropTitle }}
             </h4>
 
-            <div id="croppie-container" class="croppie-container mx-auto" style="min-height: {{ $boundaryHeight }}px; max-width: 600px;"></div>
+            <div id="croppie-container" class="croppie-container mx-auto"></div>
 
             <div class="flex justify-end space-x-3 mt-6">
                 <button 

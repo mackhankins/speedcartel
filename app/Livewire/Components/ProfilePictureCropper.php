@@ -21,8 +21,8 @@ class ProfilePictureCropper extends Component
     public $storagePath = 'uploads';
     public $aspectRatio = 1; // Square by default
     public $viewportWidth = 400;
-    public $viewportHeight = 400;
-    public $boundaryWidth = '100%';
+    public $viewportHeight = 300;
+    public $boundaryWidth = '450';
     public $boundaryHeight = 450;
     public $filePrefix = 'profile_';
     public $imageQuality = 0.9;

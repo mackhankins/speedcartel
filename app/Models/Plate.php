@@ -22,6 +22,7 @@ class Plate extends Model
      */
     public static $typeOptions = [
         ['name' => 'District', 'value' => 'district'],
+        ['name' => 'Gold Cup', 'value' => 'gold_cup'],
         ['name' => 'State', 'value' => 'state'],
         ['name' => 'National', 'value' => 'national'],
         ['name' => 'NAG', 'value' => 'nag'],

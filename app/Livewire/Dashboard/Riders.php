@@ -85,9 +85,9 @@ class Riders extends Component
             'social_profiles.tiktok' => 'nullable|string|max:255',
             'social_profiles.youtube' => 'nullable|string|max:255',
             'plates' => 'nullable|array',
-            'plates.*.type' => ['nullable', 'required_with:plates.*.number,plates.*.year', Rule::in(collect(\App\Models\Plate::$typeOptions)->pluck('value')->toArray())],
-            'plates.*.number' => ['nullable', 'required_with:plates.*.type,plates.*.year', 'string'],
-            'plates.*.year' => ['nullable', 'required_with:plates.*.type,plates.*.number', 'integer', 'min:' . (date('Y') - 25), 'max:' . date('Y')]
+            'plates.*.type' => ['nullable', Rule::in(collect(\App\Models\Plate::$typeOptions)->pluck('value')->toArray())],
+            'plates.*.number' => 'nullable|string',
+            'plates.*.year' => ['nullable', 'integer', 'min:' . (date('Y') - 25), 'max:' . date('Y')]
         ];
     }
 

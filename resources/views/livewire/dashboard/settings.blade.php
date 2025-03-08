@@ -1,6 +1,6 @@
 <div>
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <h1 class="text-3xl font-orbitron mb-8">Profile</h1>
+        <h1 class="text-3xl font-orbitron mb-8">Settings</h1>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Profile Information -->

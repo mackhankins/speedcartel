@@ -57,8 +57,8 @@
                         @auth
                             <a href="{{ route('dashboard') }}"
                                 class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Dashboard</a>
-                            <a href="{{ route('profile') }}"
-                                class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Profile</a>
+                            <a href="{{ route('settings') }}"
+                                class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Settings</a>
                             <a href="{{ route('riders') }}"
                                 class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Riders</a>
                             <div class="border-t border-gray-100 dark:border-light-gray"></div>
@@ -127,8 +127,8 @@
                 <div class="border-t border-gray-200 dark:border-light-gray my-2"></div>
                 <a href="{{ route('dashboard') }}"
                     class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Dashboard</a>
-                <a href="{{ route('profile') }}"
-                    class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Profile</a>
+                <a href="{{ route('settings') }}"
+                    class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Settings</a>
                 <a href="{{ route('riders') }}"
                     class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Riders</a>
                 <div class="border-t border-gray-200 dark:border-light-gray my-2"></div>

@@ -91,12 +91,9 @@ Route::middleware([
 ])->group(function () {
     // Dashboard Routes
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
-    Route::get('/dashboard/profile', \App\Livewire\Dashboard\Profile::class)->name('profile');
     Route::get('/dashboard/riders', App\Livewire\Dashboard\Riders::class)->name('riders');
+    Route::get('/dashboard/settings', \App\Livewire\Dashboard\Settings::class)->name('settings');
     
-    Route::get('/settings', function() {
-        return redirect()->route('dashboard');
-    })->name('settings');
     Route::get('2fa', function() {
         return redirect()->route('dashboard');
     })->name('2fa');

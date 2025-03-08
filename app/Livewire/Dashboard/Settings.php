@@ -14,7 +14,7 @@ use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
 use Livewire\Attributes\Title;
 use WireUi\Traits\WireUiActions;
 
-class Profile extends Component
+class Settings extends Component
 {
     use WireUiActions;
 
@@ -51,7 +51,6 @@ class Profile extends Component
     public $confirmationCode = '';
     public $showingPasswordConfirmation = false;
     public $action = ''; // 'enable' or 'disable'
-
     public $addressToDelete = null;
 
     public function mount()
@@ -95,7 +94,6 @@ class Profile extends Component
         ]);
 
         $user = Auth::user();
-
         if (!Hash::check($this->current_password, $user->password)) {
             $this->addError('current_password', 'The current password is incorrect.');
             return;
@@ -160,7 +158,6 @@ class Profile extends Component
     public function regenerateRecoveryCodes()
     {
         app(GenerateNewRecoveryCodes::class)(Auth::user());
-
         $this->showingRecoveryCodes = true;
     }
 
@@ -299,7 +296,6 @@ class Profile extends Component
             ->update(['is_default' => false]);
 
         $address->update(['is_default' => true]);
-
         $this->dispatch('notify', message: 'Default address updated successfully');
     }
 
@@ -322,14 +318,13 @@ class Profile extends Component
         $this->enabled2FA = true;
     }
 
-    #[Title('Profile')]
+    #[Title('Settings')]
     public function render()
     {
         $user = Auth::user();
-
-        return view('livewire.dashboard.profile', [
+        return view('livewire.dashboard.settings', [
             'shippingAddresses' => $user->addresses()->where('type', 'shipping')->get(),
             'billingAddresses' => $user->addresses()->where('type', 'billing')->get(),
         ])->layout('components.layouts.dashboard');
     }
-}
+} 

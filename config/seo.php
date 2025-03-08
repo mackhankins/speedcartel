@@ -12,7 +12,7 @@ return [
     /**
      * Use this setting to specify the site name that will be used in OpenGraph tags.
      */
-    'site_name' => null,
+    'site_name' => env('APP_NAME', 'Speed Cartel BMX Racing'),
 
     /**
      * Use this setting to specify the path to the sitemap of your website. This exact path will outputted, so
@@ -119,4 +119,10 @@ return [
          */
         '@username' => null,
     ],
+
+    'default_author' => 'Speed Cartel',
+    'default_description' => 'Speed Cartel BMX Racing Team - Building champions and pushing the limits of BMX racing.',
+    'default_image' => 'images/default-og.jpg',
+    'twitter_handle' => '@speedcartel',
+    'facebook_page' => 'https://facebook.com/speedcartel',
 ];

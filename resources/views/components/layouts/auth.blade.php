@@ -5,7 +5,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name') }} - Authentication</title>
+    <title>{{ config('app.name') }}</title>
+        <!-- Prevent flash of unstyled content in dark mode -->
+        <script>
+            // Apply dark mode immediately to prevent flash
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     @wireUiScripts

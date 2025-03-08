@@ -6,15 +6,26 @@ use Livewire\Component;
 use App\Models\Rider;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
+use App\Traits\WithSEO;
 
 #[Title('Our Team')]
 class Team extends Component
 {
-    use WithPagination;
+    use WithPagination, WithSEO;
     
     public $search = '';
     public $skillLevel = '';
     public $classFilter = '';
+    
+    protected function getSEOTitle(): string
+    {
+        return 'Our Team - Speed Cartel BMX Racing';
+    }
+
+    protected function getSEODescription(): ?string
+    {
+        return 'Meet the talented riders of Speed Cartel BMX Racing Team. From novice to pro, our diverse team showcases the best talent in BMX racing.';
+    }
     
     // Reset pagination when filters change
     public function updatedSearch()
@@ -63,6 +74,6 @@ class Team extends Component
             'riders' => $riders,
             'skillLevels' => Rider::$skillLevelOptions,
             'classes' => Rider::$classOptions
-        ])->layout('components.layouts.app');
+        ])->layout('components.layouts.app', ['component' => $this]);
     }
 }

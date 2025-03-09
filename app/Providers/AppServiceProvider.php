@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
+        // Use Tailwind CSS for pagination
+        Paginator::useTailwind();
+        
         // Override the default VerifyEmail notification
         $this->app->bind(\Illuminate\Auth\Notifications\VerifyEmail::class, \App\Notifications\CustomVerifyEmail::class);
     }

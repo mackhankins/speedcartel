@@ -6,16 +6,14 @@
             <div class="absolute inset-0 z-0">
                 <div class="absolute inset-0 bg-black/60 z-10"></div>
                 <video class="absolute inset-0 w-full h-full object-cover" autoplay loop muted playsinline>
-                    <source src="{{ asset('/videos/herbst_version2.mp4') }}" type="video/mp4">
+                    <source src="{{ asset('/videos/istockphoto-1431549613-640_adpp_is.mp4') }}" type="video/mp4">
                     <!-- Fallback image if video fails to load -->
                     <img src="https://placehold.co/1920x1080" alt="BMX Background" class="w-full h-full object-cover">
                 </video>
             </div>
 
-            <!-- CSS-based noise texture overlay -->
-            <div class="absolute inset-0 z-20 opacity-30 mix-blend-overlay"
-                style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url%28%23noiseFilter%29%22/%3E%3C/svg%3E');">
-            </div>
+<!-- Gradient overlay -->
+<div class="absolute inset-0 z-20 opacity-30 mix-blend-overlay" style="background-image: url('data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23991b1b' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E'), url('data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23450a0a' fill-opacity='0.6'%3E%3Cpath d='M0 0h20L0 20z'/%3E%3C/g%3E%3C/svg%3E');"></div>
 
             <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-28 relative z-30">
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
@@ -260,93 +258,83 @@
         <!-- Upcoming Race Calendar -->
         <section class="bg-white dark:bg-darker-gray py-24">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <h2 class="font-orbitron font-bold text-3xl md:text-4xl text-gray-900 dark:text-white">RACE <span
-                            class="text-cartel-red">CALENDAR</span></h2>
-                    <div class="w-24 h-1 bg-cartel-red mx-auto mt-4"></div>
+                <div class="flex justify-between items-center mb-12">
+                    <div>
+                        <h2 class="font-orbitron font-bold text-3xl md:text-4xl text-gray-900 dark:text-white">RACE <span
+                                class="text-cartel-red">CALENDAR</span></h2>
+                        <div class="w-24 h-1 bg-cartel-red mt-4"></div>
+                    </div>
+                    <a href="{{ route('races') }}" class="text-gray-900 dark:text-white hover:text-cartel-red transition font-orbitron">
+                        VIEW ALL EVENTS →
+                    </a>
                 </div>
 
-                <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-                        <thead class="bg-gray-100 dark:bg-light-gray">
-                            <tr>
-                                <th scope="col"
-                                    class="py-3.5 pl-4 pr-3 text-left text-sm font-orbitron text-gray-900 dark:text-white sm:pl-6">
-                                    DATE</th>
-                                <th scope="col"
-                                    class="px-3 py-3.5 text-left text-sm font-orbitron text-gray-900 dark:text-white">
-                                    EVENT</th>
-                                <th scope="col"
-                                    class="px-3 py-3.5 text-left text-sm font-orbitron text-gray-900 dark:text-white">
-                                    LOCATION</th>
-                                <th scope="col"
-                                    class="px-3 py-3.5 text-left text-sm font-orbitron text-gray-900 dark:text-white">
-                                    CATEGORY</th>
-                                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                    <span class="sr-only">Details</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 dark:divide-gray-800 bg-white dark:bg-dark-gray">
-                            <tr>
-                                <td
-                                    class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-6">
-                                    Mar 15, 2025</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">West
-                                    Coast Showdown</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">San
-                                    Diego, CA</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">
-                                    National</td>
-                                <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                    <a href="#" class="text-cartel-red hover:text-red-400">Details</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td
-                                    class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-6">
-                                    Apr 2-3, 2025</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">BMX
-                                    Super Series</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">Austin,
-                                    TX</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">
-                                    International</td>
-                                <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                    <a href="#" class="text-cartel-red hover:text-red-400">Details</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td
-                                    class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-6">
-                                    Apr 22, 2025</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">Metro
-                                    City Challenge</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">
-                                    Chicago, IL</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">
-                                    Regional</td>
-                                <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                    <a href="#" class="text-cartel-red hover:text-red-400">Details</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td
-                                    class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-6">
-                                    May 8-10, 2025</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">World
-                                    Cup Qualifier</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">
-                                    Orlando, FL</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">World
-                                    Cup</td>
-                                <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                    <a href="#" class="text-cartel-red hover:text-red-400">Details</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                @if($upcomingEvents->isEmpty())
+                    <div class="text-center py-12 bg-gray-50 dark:bg-light-gray rounded-lg">
+                        <svg class="mx-auto h-16 w-16 text-gray-400 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No upcoming events</h3>
+                        <p class="mt-1 text-gray-500 dark:text-gray-400">Check back soon for new race events.</p>
+                    </div>
+                @else
+                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+                            <thead class="bg-gray-100 dark:bg-light-gray">
+                                <tr>
+                                    <th scope="col"
+                                        class="py-3.5 pl-4 pr-3 text-left text-sm font-orbitron text-gray-900 dark:text-white sm:pl-6">
+                                        DATE</th>
+                                    <th scope="col"
+                                        class="px-3 py-3.5 text-left text-sm font-orbitron text-gray-900 dark:text-white">
+                                        EVENT</th>
+                                    <th scope="col"
+                                        class="px-3 py-3.5 text-left text-sm font-orbitron text-gray-900 dark:text-white">
+                                        LOCATION</th>
+                                    <th scope="col"
+                                        class="px-3 py-3.5 text-left text-sm font-orbitron text-gray-900 dark:text-white">
+                                        CATEGORY</th>
+                                    <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                                        <span class="sr-only">Details</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-800 bg-white dark:bg-dark-gray">
+                                @foreach($upcomingEvents as $event)
+                                <tr>
+                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-6">
+                                        @if($event->start_date->format('Y-m-d') === $event->end_date->format('Y-m-d'))
+                                            {{ $event->start_date->format('M j, Y') }}
+                                        @else
+                                            {{ $event->start_date->format('M j') }} - {{ $event->end_date->format('j, Y') }}
+                                        @endif
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">
+                                        {{ $event->title }}
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">
+                                        {{ $event->location }}
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300">
+                                        @if($event->tags->isNotEmpty())
+                                            {{ $event->tags->first()->name }}
+                                        @else
+                                            BMX Event
+                                        @endif
+                                    </td>
+                                    <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                        @if($event->url)
+                                            <a href="{{ $event->url }}" target="_blank" class="text-cartel-red hover:text-red-400">Details</a>
+                                        @else
+                                            <a href="{{ route('races') }}?search={{ urlencode($event->title) }}" class="text-cartel-red hover:text-red-400">View</a>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </div>
         </section>
 

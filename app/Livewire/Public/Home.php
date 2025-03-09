@@ -4,6 +4,8 @@ namespace App\Livewire\Public;
 
 use Livewire\Component;
 use App\Models\Rider;
+use App\Models\Event;
+use Carbon\Carbon;
 use App\Traits\WithSEO;
 
 class Home extends Component
@@ -35,11 +37,23 @@ class Home extends Component
             ->get();
     }
 
+    public function getUpcomingEvents()
+    {
+        return Event::where('status', 'confirmed')
+            ->where('start_date', '>=', Carbon::now()->startOfDay())
+            ->orderBy('start_date', 'asc')
+            ->limit(5)
+            ->get();
+    }
+
     public function render()
     {
         $featuredRiders = $this->getFeaturedRiders();
+        $upcomingEvents = $this->getUpcomingEvents();
+        
         return view('livewire.public.home', [
-            'featuredRiders' => $featuredRiders
+            'featuredRiders' => $featuredRiders,
+            'upcomingEvents' => $upcomingEvents
         ])->layout('components.layouts.app', ['component' => $this]);
     }
 }

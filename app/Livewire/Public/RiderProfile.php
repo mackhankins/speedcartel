@@ -70,7 +70,7 @@ class RiderProfile extends Component
             ->where('is_current', false)
             ->count();
 
-        return view('livewire.rider-profile', [
+        return view('livewire.public.rider-profile', [
             'skillLevelOptions' => Rider::$skillLevelOptions,
             'classOptions' => Rider::$classOptions,
             'currentPlate' => $currentPlate,

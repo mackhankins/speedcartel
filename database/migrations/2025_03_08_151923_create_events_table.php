@@ -20,11 +20,9 @@ return new class extends Migration
             $table->dateTime('end_date');
             $table->boolean('is_all_day')->default(false);
             $table->string('recurrence_rule')->nullable();
-            $table->string('color')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->enum('status', ['confirmed', 'tentative', 'cancelled'])->default('confirmed');
             $table->string('url')->nullable();
-            $table->string('timezone')->default('UTC');
             $table->timestamps();
             $table->softDeletes();
         });

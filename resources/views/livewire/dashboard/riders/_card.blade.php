@@ -21,7 +21,7 @@
             <x-button wire:click="confirmDelete({{ $rider->id }})" icon="trash" negative flat size="sm" class="!bg-white/80 hover:!bg-white" />
         </div>
     </div>
-    
+
     <!-- Card Body -->
     <div class="p-6 pt-12">
         <!-- Rider Name and Nickname -->
@@ -35,7 +35,7 @@
                 </div>
             @endif
         </div>
-        
+
         <!-- Rider Details -->
         <div class="space-y-2 text-sm">
             <div class="flex items-center justify-between py-1 border-b border-gray-100 dark:border-gray-700">
@@ -58,7 +58,7 @@
                     <div class="text-gray-900 dark:text-white">{{ $rider->skill_level }}</div>
                 </div>
             @endif
-            
+
             @if($rider->home_track)
                 <div class="flex items-center justify-between py-1 border-b border-gray-100 dark:border-gray-700">
                     <div class="text-gray-500 dark:text-gray-400 font-medium">Home Track</div>
@@ -68,7 +68,7 @@
                 </div>
             @endif
         </div>
-        
+
         <!-- Social Media Links -->
         @if($rider->social_profiles && count(array_filter((array)$rider->social_profiles)) > 0)
             <div class="mt-4 pt-2 flex justify-center space-x-4">
@@ -79,7 +79,7 @@
                         </svg>
                     </a>
                 @endif
-                
+
                 @if(!empty($rider->social_profiles['facebook']))
                     <a href="{{ Str::startsWith($rider->social_profiles['facebook'], 'http') ? $rider->social_profiles['facebook'] : 'https://facebook.com/' . $rider->social_profiles['facebook'] }}" target="_blank" class="text-gray-400 hover:text-blue-600 transition-colors">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -87,7 +87,7 @@
                         </svg>
                     </a>
                 @endif
-                
+
                 @if(!empty($rider->social_profiles['twitter']))
                     <a href="https://twitter.com/{{ ltrim($rider->social_profiles['twitter'], '@') }}" target="_blank" class="text-gray-400 hover:text-blue-400 transition-colors">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -95,7 +95,7 @@
                         </svg>
                     </a>
                 @endif
-                
+
                 @if(!empty($rider->social_profiles['tiktok']))
                     <a href="https://tiktok.com/@{{ ltrim($rider->social_profiles['tiktok'], '@') }}" target="_blank" class="text-gray-400 hover:text-black transition-colors">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -103,7 +103,7 @@
                         </svg>
                     </a>
                 @endif
-                
+
                 @if(!empty($rider->social_profiles['youtube']))
                     <a href="{{ Str::startsWith($rider->social_profiles['youtube'], 'http') ? $rider->social_profiles['youtube'] : 'https://youtube.com/c/' . $rider->social_profiles['youtube'] }}" target="_blank" class="text-gray-400 hover:text-red-600 transition-colors">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -114,4 +114,4 @@
             </div>
         @endif
     </div>
-</div> 
+</div>

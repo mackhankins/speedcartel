@@ -84,6 +84,7 @@ class ManagePanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                \App\Filament\Widgets\UpcomingBirthdaysWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -114,7 +115,9 @@ class ManagePanelProvider extends PanelProvider
                     ->icon('heroicon-o-shield-check')
                     ->group('User Management')
                     ->sort(2)
-                    ->visible(fn(): bool => auth()->check() && auth()->user()->hasRole('super_admin')),
+                    ->visible(function (): bool {
+                        return auth()->check() && auth()->user() && auth()->user()->hasRole('super_admin');
+                    }),
             ]);
     }
 }

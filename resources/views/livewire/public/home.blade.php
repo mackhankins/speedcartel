@@ -40,9 +40,9 @@
                         </p>
 
                         <div class="flex flex-col sm:flex-row gap-5">
-                            <a href="#"
+                            <a href="{{ route('team') }}"
                                 class="group flex items-center justify-center bg-cartel-red hover:bg-red-700 text-white font-orbitron font-bold py-4 px-8 rounded-lg transition duration-300 ease-out">
-                                JOIN THE TEAM
+                                MEET THE TEAM
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                     class="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -50,7 +50,7 @@
                                         d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                 </svg>
                             </a>
-                            <a href="#"
+                            <a href="{{ route('races') }}"
                                 class="group flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-orbitron font-bold py-4 px-8 border border-white/20 rounded-lg backdrop-blur-sm transition duration-300">
                                 UPCOMING RACES
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 opacity-70" fill="none"
@@ -85,40 +85,95 @@
                             <div class="absolute -top-3 -left-3 w-6 h-6 rounded-full bg-cartel-red"></div>
                             <div class="absolute -bottom-3 -right-3 w-6 h-6 rounded-full bg-cartel-red"></div>
 
-                            <h3 class="font-orbitron text-xl font-bold text-white mb-3">Next Championship</h3>
+                            <h3 class="font-orbitron text-xl font-bold text-white mb-3">Next Race</h3>
 
-                            <div class="flex items-center gap-4 mb-4">
-                                <div class="w-12 h-12 rounded-full bg-cartel-red/20 flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cartel-red" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
+                            @if($upcomingEvents->isNotEmpty())
+                                @php $nextEvent = $upcomingEvents->first(); @endphp
+                                <div class="flex items-center gap-4 mb-4">
+                                    <div class="w-12 h-12 rounded-full bg-cartel-red/20 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cartel-red" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-white font-medium">
+                                            @if($nextEvent->start_date->format('Y-m-d') === $nextEvent->end_date->format('Y-m-d'))
+                                                {{ $nextEvent->start_date->format('M j, Y') }}
+                                            @else
+                                                {{ $nextEvent->start_date->format('M j') }} - {{ $nextEvent->end_date->format('j, Y') }}
+                                            @endif
+                                        </p>
+                                        <p class="text-gray-400 text-sm">{{ $nextEvent->location }}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="text-white font-medium">March 15, 2025</p>
-                                    <p class="text-gray-400 text-sm">San Diego, CA</p>
-                                </div>
-                            </div>
 
-                            <div class="flex items-center gap-4 mb-6">
-                                <div class="w-12 h-12 rounded-full bg-cartel-red/20 flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cartel-red" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
+                                <div class="flex items-center gap-4 mb-6">
+                                    <div class="w-12 h-12 rounded-full bg-cartel-red/20 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cartel-red" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div class="max-w-[200px]">
+                                        <p class="text-white font-medium truncate" title="{{ $nextEvent->title }}">{{ $nextEvent->title }}</p>
+                                        <p class="text-gray-400 text-sm truncate">
+                                            @if($nextEvent->tags->isNotEmpty())
+                                                {{ $nextEvent->tags->first()->name }}
+                                            @else
+                                                BMX Event
+                                            @endif
+                                        </p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="text-white font-medium">Registration Opens</p>
-                                    <p class="text-gray-400 text-sm">In 3 days, 14 hours</p>
-                                </div>
-                            </div>
 
-                            <a href="#"
-                                class="block w-full text-center bg-cartel-red hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
-                                Register Now
-                            </a>
+                                @if($nextEvent->url)
+                                    <a href="{{ $nextEvent->url }}" target="_blank"
+                                        class="block w-full text-center bg-cartel-red hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
+                                        Event Details
+                                    </a>
+                                @else
+                                    <a href="{{ route('races') }}?search={{ urlencode($nextEvent->title) }}"
+                                        class="block w-full text-center bg-cartel-red hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
+                                        View Event Details
+                                    </a>
+                                @endif
+                            @else
+                                <div class="flex items-center gap-4 mb-4">
+                                    <div class="w-12 h-12 rounded-full bg-cartel-red/20 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cartel-red" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-white font-medium">Coming Soon</p>
+                                        <p class="text-gray-400 text-sm">Stay tuned for updates</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-4 mb-6">
+                                    <div class="w-12 h-12 rounded-full bg-cartel-red/20 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cartel-red" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-white font-medium">Next Race</p>
+                                        <p class="text-gray-400 text-sm">Check back soon</p>
+                                    </div>
+                                </div>
+
+                                <a href="{{ route('races') }}"
+                                    class="block w-full text-center bg-cartel-red hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
+                                    View All Events
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -278,7 +333,8 @@
                         <p class="mt-1 text-gray-500 dark:text-gray-400">Check back soon for new race events.</p>
                     </div>
                 @else
-                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                    <!-- Table for medium and larger screens -->
+                    <div class="hidden md:block overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
                             <thead class="bg-gray-100 dark:bg-light-gray">
                                 <tr>
@@ -333,6 +389,67 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Card layout for small screens -->
+                    <div class="md:hidden space-y-4">
+                        @foreach($upcomingEvents as $event)
+                            <div class="bg-white dark:bg-light-gray rounded-lg overflow-hidden shadow-md border border-gray-200 dark:border-gray-700">
+                                <div class="p-4">
+                                    <!-- Date badge -->
+                                    <div class="inline-block px-3 py-1 rounded-full bg-cartel-red/10 border border-cartel-red/30 mb-3">
+                                        <p class="text-xs font-medium text-cartel-red">
+                                            @if($event->start_date->format('Y-m-d') === $event->end_date->format('Y-m-d'))
+                                                {{ $event->start_date->format('M j, Y') }}
+                                            @else
+                                                {{ $event->start_date->format('M j') }} - {{ $event->end_date->format('j, Y') }}
+                                            @endif
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Event title -->
+                                    <h3 class="font-orbitron font-bold text-base text-gray-900 dark:text-white mb-2">
+                                        {{ $event->title }}
+                                    </h3>
+                                    
+                                    <!-- Event details -->
+                                    <div class="space-y-2 mb-4">
+                                        <div class="flex items-center text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            <span class="text-gray-700 dark:text-gray-300">{{ $event->location }}</span>
+                                        </div>
+                                        <div class="flex items-center text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                            </svg>
+                                            <span class="text-gray-700 dark:text-gray-300">
+                                                @if($event->tags->isNotEmpty())
+                                                    {{ $event->tags->first()->name }}
+                                                @else
+                                                    BMX Event
+                                                @endif
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Action button -->
+                                    @if($event->url)
+                                        <a href="{{ $event->url }}" target="_blank" 
+                                           class="block w-full text-center bg-cartel-red hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 text-sm">
+                                            Event Details
+                                        </a>
+                                    @else
+                                        <a href="{{ route('races') }}?search={{ urlencode($event->title) }}" 
+                                           class="block w-full text-center bg-cartel-red hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 text-sm">
+                                            View Details
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 @endif
             </div>

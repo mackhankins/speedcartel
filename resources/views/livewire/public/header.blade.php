@@ -61,6 +61,14 @@
                                 class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Settings</a>
                             <a href="{{ route('riders') }}"
                                 class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Riders</a>
+                            
+                            @can('access_admin')
+                            <a href="{{ url('/manage') }}"
+                                class="block px-4 py-2 text-cartel-red font-medium hover:bg-gray-100 dark:hover:bg-light-gray">
+                                Manage
+                            </a>
+                            @endcan
+                            
                             <div class="border-t border-gray-100 dark:border-light-gray"></div>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -131,6 +139,14 @@
                     class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Settings</a>
                 <a href="{{ route('riders') }}"
                     class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Riders</a>
+                
+                @can('access_admin')
+                <a href="{{ url('/manage') }}"
+                    class="block px-3 py-2 text-cartel-red font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">
+                    Manage
+                </a>
+                @endcan
+                
                 <div class="border-t border-gray-200 dark:border-light-gray my-2"></div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

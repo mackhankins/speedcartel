@@ -85,6 +85,7 @@ class ManagePanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
                 \App\Filament\Widgets\UpcomingBirthdaysWidget::class,
+                \App\Filament\Widgets\PendingRideablesWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

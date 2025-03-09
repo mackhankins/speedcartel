@@ -56,6 +56,17 @@ class Rider extends Model
     ];
 
     /**
+     * Available social profile platform options
+     */
+    public static $socialProfileOptions = [
+        'instagram' => 'Instagram',
+        'facebook' => 'Facebook',
+        'twitter' => 'Twitter/X',
+        'tiktok' => 'TikTok',
+        'youtube' => 'YouTube'
+    ];
+
+    /**
      * The "booted" method of the model.
      *
      * @return void

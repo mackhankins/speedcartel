@@ -33,39 +33,49 @@
 
                 <!-- Time Filter -->
                 <div>
-                    <label for="filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time Period</label>
-                    <select wire:model.live="filter" id="filter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 dark:bg-darker-gray dark:text-white focus:outline-none focus:ring-cartel-red focus:border-cartel-red sm:text-sm rounded-md">
+                    <x-native-select
+                        label="Time Period"
+                        wire:model.live="filter"
+                    >
                         <option value="upcoming">Upcoming Events</option>
                         <option value="past">Past Events</option>
                         <option value="month">By Month</option>
-                    </select>
+                    </x-native-select>
                 </div>
 
                 <!-- Event Type Filter -->
                 <div>
-                    <label for="tag" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Event Type</label>
-                    <select wire:model.live="selectedTag" id="tag" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 dark:bg-darker-gray dark:text-white focus:outline-none focus:ring-cartel-red focus:border-cartel-red sm:text-sm rounded-md">
+                    <x-native-select
+                        label="Event Type"
+                        wire:model.live="selectedTag"
+                    >
                         <option value="">All Types</option>
                         @foreach($eventTags as $tag)
                             <option value="{{ $tag }}">{{ ucwords($tag) }}</option>
                         @endforeach
-                    </select>
+                    </x-native-select>
                 </div>
 
                 <!-- Month/Year Selectors (only show when filter is 'month') -->
                 <div x-data="{}" x-show="$wire.filter === 'month'" x-transition>
-                    <label for="month-year" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Month & Year</label>
                     <div class="grid grid-cols-2 gap-2">
-                        <select wire:model.live="month" id="month" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 dark:bg-darker-gray dark:text-white focus:outline-none focus:ring-cartel-red focus:border-cartel-red sm:text-sm rounded-md">
+                        <x-native-select
+                            label="Month"
+                            wire:model.live="month"
+                        >
                             @foreach($months as $key => $monthName)
                                 <option value="{{ $key }}">{{ $monthName }}</option>
                             @endforeach
-                        </select>
-                        <select wire:model.live="year" id="year" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 dark:bg-darker-gray dark:text-white focus:outline-none focus:ring-cartel-red focus:border-cartel-red sm:text-sm rounded-md">
+                        </x-native-select>
+                        
+                        <x-native-select
+                            label="Year"
+                            wire:model.live="year"
+                        >
                             @foreach($years as $yearValue)
                                 <option value="{{ $yearValue }}">{{ $yearValue }}</option>
                             @endforeach
-                        </select>
+                        </x-native-select>
                     </div>
                 </div>
             </div>

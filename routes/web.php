@@ -21,13 +21,14 @@ use Illuminate\Http\Request;
 use App\Notifications\CustomVerifyEmail;
 use Laravel\Fortify\Fortify;
 use App\Livewire\TeamProfile;
+use App\Livewire\Public\Sponsors;
 
 // Public Routes
 Route::get('/', Home::class)->name('home');
 Route::get('/team', Team::class)->name('team');
 Route::get('/team/rider/{rider}', RiderProfile::class)->name('team.rider');
 Route::get('/races', Races::class)->name('races');
-Route::get('/sponsors', function() { return view('coming-soon'); })->name('sponsors');
+Route::get('/sponsors', Sponsors::class)->name('sponsors');
 Route::get('/contact', function() { return view('coming-soon'); })->name('contact');
 Route::get('/cart', Cart::class)->name('cart');
 

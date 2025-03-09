@@ -79,6 +79,7 @@ export default {
     },
     plugins: [
         require('@tailwindcss/forms')({ strategy: 'class' }),
+        require('@tailwindcss/line-clamp'),
         function({ addComponents }) {
             addComponents({
                 '.dark .form-input, .dark .form-textarea, .dark .form-select, .dark .form-multiselect': {

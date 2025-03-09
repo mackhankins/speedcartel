@@ -5,6 +5,7 @@ namespace App\Livewire\Public;
 use Livewire\Component;
 use App\Models\Rider;
 use App\Models\Event;
+use App\Models\Sponsor;
 use Carbon\Carbon;
 use App\Traits\WithSEO;
 
@@ -45,15 +46,26 @@ class Home extends Component
             ->limit(5)
             ->get();
     }
+    
+    public function getFeaturedSponsors()
+    {
+        return Sponsor::where('status', 'active')
+            ->whereNotNull('logo_path')
+            ->inRandomOrder()
+            ->limit(4)
+            ->get();
+    }
 
     public function render()
     {
         $featuredRiders = $this->getFeaturedRiders();
         $upcomingEvents = $this->getUpcomingEvents();
+        $featuredSponsors = $this->getFeaturedSponsors();
         
         return view('livewire.public.home', [
             'featuredRiders' => $featuredRiders,
-            'upcomingEvents' => $upcomingEvents
+            'upcomingEvents' => $upcomingEvents,
+            'featuredSponsors' => $featuredSponsors
         ])->layout('components.layouts.app', ['component' => $this]);
     }
 }

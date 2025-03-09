@@ -469,23 +469,24 @@
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-8 items-center">
-                    <!-- Sponsor logos - replace with actual logos -->
-                    <div class="bg-white dark:bg-light-gray p-6 rounded-lg flex items-center justify-center h-32">
-                        <div class="text-gray-700 dark:text-gray-300 font-bold">SPONSOR 1</div>
-                    </div>
-                    <div class="bg-white dark:bg-light-gray p-6 rounded-lg flex items-center justify-center h-32">
-                        <div class="text-gray-700 dark:text-gray-300 font-bold">SPONSOR 2</div>
-                    </div>
-                    <div class="bg-white dark:bg-light-gray p-6 rounded-lg flex items-center justify-center h-32">
-                        <div class="text-gray-700 dark:text-gray-300 font-bold">SPONSOR 3</div>
-                    </div>
-                    <div class="bg-white dark:bg-light-gray p-6 rounded-lg flex items-center justify-center h-32">
-                        <div class="text-gray-700 dark:text-gray-300 font-bold">SPONSOR 4</div>
-                    </div>
+                    @foreach($featuredSponsors as $sponsor)
+                        <div class="bg-white dark:bg-light-gray p-6 rounded-lg flex items-center justify-center h-32 shadow-md hover:shadow-lg transition-shadow duration-300">
+                            <a href="{{ $sponsor->website ?? route('sponsors') . '?search=' . urlencode($sponsor->name) }}" 
+                               class="w-full h-full flex items-center justify-center" 
+                               @if($sponsor->website) target="_blank" @endif>
+                                <img 
+                                    src="{{ asset('storage/' . $sponsor->logo_path) }}" 
+                                    alt="{{ $sponsor->name }} logo" 
+                                    class="max-h-full max-w-full object-contain"
+                                    loading="lazy"
+                                >
+                            </a>
+                        </div>
+                    @endforeach
                 </div>
 
                 <div class="text-center mt-12">
-                    <a href="#"
+                    <a href="{{ route('sponsors') }}"
                         class="inline-block bg-transparent hover:bg-gray-200 dark:hover:bg-light-gray text-gray-900 dark:text-white font-orbitron font-bold py-3 px-8 border-2 border-cartel-red rounded-md transition duration-300 ease-in-out">
                         BECOME A SPONSOR
                     </a>

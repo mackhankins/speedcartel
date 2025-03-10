@@ -17,7 +17,7 @@ trait HasProfilePhoto
         if ($this->profile_pic) {
             // Check if the file exists with the exact path
             if (Storage::disk('public')->exists($this->profile_pic)) {
-                return asset('storage/' . $this->profile_pic);
+                return Storage::disk('public')->url($this->profile_pic);
             }
 
             // Check if the file exists with just the basename (in case the path is stored differently)
@@ -25,7 +25,7 @@ trait HasProfilePhoto
             $directory = dirname($this->profile_pic);
 
             if (Storage::disk('public')->exists($directory . '/' . $basename)) {
-                return asset('storage/' . $directory . '/' . $basename);
+                return Storage::disk('public')->url($directory . '/' . $basename);
             }
 
             // Check if any files exist in the directory
@@ -39,7 +39,7 @@ trait HasProfilePhoto
                 $this->profile_pic = $latestFile;
                 $this->save();
 
-                return asset('storage/' . $latestFile);
+                return Storage::disk('public')->url($latestFile);
             }
 
             // If we can't find the file, clear the profile_pic field and return default

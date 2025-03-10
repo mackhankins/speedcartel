@@ -98,9 +98,12 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
             return false;
         }
 
-        return $this->hasAnyRole(['super_admin']);
+        // For the manage panel, check for the custom permission
+        if ($panel->getId() === 'manage') {
+            return $this->hasPermissionTo('access_manage_panel');
+        }
         
-
+        // For other panels, you can define different access rules
         return false;
     }
 }

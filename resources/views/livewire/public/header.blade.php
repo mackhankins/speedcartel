@@ -62,7 +62,7 @@
                             <a href="{{ route('riders') }}"
                                 class="block px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray">Riders</a>
                             
-                            @can('access_admin')
+                            @can('access_manage_panel')
                             <a href="{{ url('/manage') }}"
                                 class="block px-4 py-2 text-cartel-red font-medium hover:bg-gray-100 dark:hover:bg-light-gray">
                                 Manage
@@ -140,7 +140,7 @@
                 <a href="{{ route('riders') }}"
                     class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Riders</a>
                 
-                @can('access_admin')
+                @can('access_manage_panel')
                 <a href="{{ url('/manage') }}"
                     class="block px-3 py-2 text-cartel-red font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">
                     Manage

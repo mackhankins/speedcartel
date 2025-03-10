@@ -69,14 +69,24 @@ class Login extends Component
         return Str::transliterate(Str::lower($this->email).'|'.request()->ip());
     }
 
+    /**
+     * Redirect to Google OAuth
+     * 
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        return redirect()->route('login.social', ['provider' => 'google']);
     }
 
+    /**
+     * Redirect to Facebook OAuth
+     * 
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function redirectToFacebook()
     {
-        return Socialite::driver('facebook')->redirect();
+        return redirect()->route('login.social', ['provider' => 'facebook']);
     }
 
     public function render()

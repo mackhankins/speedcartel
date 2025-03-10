@@ -128,5 +128,14 @@ return [
      */
     Laravel\Fortify\FortifyServiceProvider::class,
     PragmaRX\Google2FA\Google2FA::class,
+    Laravel\Socialite\SocialiteServiceProvider::class,
+
+    /*
+     * Application Aliases
+     */
+    'aliases' => [
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'Arr' => Illuminate\Support\Arr::class,
+    ],
 
 ];

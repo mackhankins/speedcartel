@@ -42,14 +42,9 @@ Route::middleware('guest')->group(function () {
     Route::get('forgot-password', ForgotPassword::class)->name('password.request');
     Route::get('reset-password/{token}', ResetPassword::class)->name('password.reset');
     
-    // Social Login Routes (temporary redirects)
-    Route::get('login/google', function() {
-        return redirect()->route('login');
-    })->name('login.google');
-    
-    Route::get('login/facebook', function() {
-        return redirect()->route('login');
-    })->name('login.facebook');
+    // Social Login Routes
+    Route::get('login/{provider}', [SocialiteController::class, 'redirect'])->name('login.social');
+    Route::get('login/{provider}/callback', [SocialiteController::class, 'callback'])->name('login.social.callback');
 });
 
 // Two-Factor Authentication Routes
@@ -123,7 +118,3 @@ Route::post('/email/resend-verification', function (Request $request) {
     $user->notify(new \App\Notifications\CustomVerifyEmail());
     return response()->json(['success' => true]);
 })->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
-
-// Social Login Routes
-Route::get('login/{provider}', [SocialiteController::class, 'redirect'])->name('login.social');
-Route::get('login/{provider}/callback', [SocialiteController::class, 'callback'])->name('login.social.callback');

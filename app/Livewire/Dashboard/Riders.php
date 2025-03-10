@@ -212,11 +212,6 @@ class Riders extends Component
         // Set home_track, ensuring it's null if empty
         $this->home_track = $rider->home_track ?: null;
         
-        // Log the home_track value for debugging
-        \Log::info('Editing rider with home_track: ' . $rider->home_track);
-        \Log::info('Home track type: ' . gettype($rider->home_track));
-        \Log::info('Available tracks: ' . json_encode($this->tracks));
-        
         $this->social_profiles = $rider->social_profiles ?? [
             'instagram' => '',
             'facebook' => '',
@@ -405,7 +400,6 @@ class Riders extends Component
      */
     public function handleProfilePictureSaved($path)
     {
-        \Log::info('Profile picture saved event received with path: ' . $path);
         $this->temp_profile_pic = $path;
         
         // If we're editing a rider, update it directly
@@ -415,10 +409,6 @@ class Riders extends Component
             
             // Refresh the rider to ensure we have the latest data
             $this->selectedRider->refresh();
-            
-            \Log::info('Updated rider profile_pic directly: ' . $path);
-            \Log::info('Rider profile_pic after update: ' . $this->selectedRider->profile_pic);
-            \Log::info('Rider profile_photo_url after update: ' . $this->selectedRider->profile_photo_url);
         }
     }
 
@@ -455,13 +445,6 @@ class Riders extends Component
             $this->home_track = null;
         }
 
-        \Log::info('Saving rider', [
-            'editing' => $this->editingRider,
-            'selectedRider' => $this->selectedRider ? $this->selectedRider->id : null,
-            'temp_profile_pic' => $this->temp_profile_pic,
-            'home_track' => $this->home_track
-        ]);
-
         $riderData = [
             'firstname' => $this->firstname,
             'lastname' => $this->lastname,
@@ -473,13 +456,9 @@ class Riders extends Component
             'social_profiles' => $this->social_profiles
         ];
         
-        // Log the home_track value being saved
-        \Log::info('Home track value being saved: ' . ($this->home_track === null ? 'null' : $this->home_track));
-        
         // Add the profile_pic to the rider data if we have a temporary path
         if ($this->temp_profile_pic) {
             $riderData['profile_pic'] = $this->temp_profile_pic;
-            \Log::info('Adding profile_pic to rider data: ' . $this->temp_profile_pic);
         }
 
         if ($this->selectedRider) {
@@ -488,9 +467,6 @@ class Riders extends Component
             // Check current user's status with this rider
             $userRider = $this->getUser()->riders()->find($rider->id);
             if ($userRider && $userRider->pivot->status === 1) {
-                // Log the rider data before update
-                \Log::info('Updating rider with data: ', $riderData);
-                
                 $rider->update($riderData);
                 
                 // Update plates
@@ -508,11 +484,9 @@ class Riders extends Component
                 
                 // Verify the rider was updated
                 $rider->refresh();
-                \Log::info('Rider after update - ID: ' . $rider->id . ', profile_pic: ' . $rider->profile_pic);
             }
         } else {
             // Create new rider
-            \Log::info('Creating new rider with data: ', $riderData);
             $rider = Rider::create($riderData);
             
             // Add plates
@@ -526,8 +500,6 @@ class Riders extends Component
                     ]);
                 }
             }
-            
-            \Log::info('Created new rider with ID: ' . $rider->id . ', profile_pic: ' . $rider->profile_pic);
         }
 
         // Attach or update the relationship with the user
@@ -537,7 +509,6 @@ class Riders extends Component
                 'status' => $this->status
             ]
         ]);
-        \Log::info('Updated rider relationship for user: ' . $this->getUser()->id . ' with rider: ' . $rider->id);
 
         $this->notification()->success(
             $title = $this->selectedRider ? 'Rider Updated' : 'Rider Added',

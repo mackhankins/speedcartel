@@ -464,6 +464,40 @@ class ImportBmxEvents extends Command
             return false;
         }
         
+        // Check if we're on Linux and try to install Chrome dependencies
+        if (PHP_OS_FAMILY === 'Linux') {
+            $this->info('Linux detected. Checking for Chrome dependencies...');
+            
+            // Try to install Chrome dependencies if we have sudo access
+            // Note: This might not work in all environments due to permissions
+            try {
+                $this->info('Attempting to install Chrome dependencies (this may require sudo)...');
+                $chromeDepProcess = new Process(['apt-get', 'update', '-y']);
+                $chromeDepProcess->setTimeout(300);
+                $chromeDepProcess->run();
+                
+                $chromeDepProcess = new Process([
+                    'apt-get', 'install', '-y',
+                    'libx11-xcb1', 'libxcomposite1', 'libxcursor1', 'libxdamage1',
+                    'libxi6', 'libxtst6', 'libnss3', 'libcups2', 'libxss1',
+                    'libxrandr2', 'libasound2', 'libatk1.0-0', 'libatk-bridge2.0-0',
+                    'libpangocairo-1.0-0', 'libgtk-3-0', 'libgbm1'
+                ]);
+                $chromeDepProcess->setTimeout(300);
+                $chromeDepProcess->run();
+                
+                if ($chromeDepProcess->isSuccessful()) {
+                    $this->info('Chrome dependencies installed successfully.');
+                } else {
+                    $this->warn('Could not install Chrome dependencies. This might be due to permission issues.');
+                    $this->warn('The scraper might still work with the updated configuration.');
+                }
+            } catch (\Exception $e) {
+                $this->warn('Could not install Chrome dependencies: ' . $e->getMessage());
+                $this->warn('The scraper might still work with the updated configuration.');
+            }
+        }
+        
         $process = new Process([$npmPath, 'install'], base_path('scripts/node'));
         $process->setTimeout(300); // 5 minutes timeout
         

@@ -45,10 +45,56 @@ function makeRequest(url) {
 async function getRenderedPageContent(url) {
   console.log(`Launching headless browser to render: ${url}`);
   
-  const browser = await puppeteer.launch({
+  // Determine if we're running on Linux
+  const isLinux = process.platform === 'linux';
+  
+  // Configure browser launch options with additional arguments for Linux
+  const launchOptions = {
     headless: 'new',
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-accelerated-2d-canvas',
+      '--no-first-run',
+      '--no-zygote',
+      '--single-process',
+      '--disable-gpu'
+    ]
+  };
+  
+  // Add executable path for Linux if needed
+  if (isLinux) {
+    console.log('Running on Linux, using special configuration');
+    // We don't set executablePath as Puppeteer should find the right one
+  }
+  
+  let browser;
+  try {
+    // Try to launch with standard options
+    browser = await puppeteer.launch(launchOptions);
+  } catch (error) {
+    console.error('Failed to launch browser with standard options:', error.message);
+    
+    // Try alternative approach for Linux
+    if (isLinux) {
+      console.log('Trying alternative launch approach for Linux...');
+      try {
+        // Try with explicit executable path if available via environment variable
+        const chromePath = process.env.CHROME_BIN || '/usr/bin/google-chrome';
+        console.log(`Trying with explicit Chrome path: ${chromePath}`);
+        
+        launchOptions.executablePath = chromePath;
+        browser = await puppeteer.launch(launchOptions);
+      } catch (altError) {
+        console.error('Alternative launch approach failed:', altError.message);
+        throw new Error(`Failed to launch browser after multiple attempts: ${error.message}, ${altError.message}`);
+      }
+    } else {
+      // Re-throw the original error if not on Linux
+      throw error;
+    }
+  }
   
   try {
     const page = await browser.newPage();
@@ -75,8 +121,10 @@ async function getRenderedPageContent(url) {
     
     return content;
   } finally {
-    await browser.close();
-    console.log('Browser closed');
+    if (browser) {
+      await browser.close();
+      console.log('Browser closed');
+    }
   }
 }
 

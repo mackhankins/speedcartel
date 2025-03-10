@@ -4,12 +4,21 @@
   "description": "Scraper for USA BMX events",
   "main": "bmx_scraper.js",
   "scripts": {
-    "scrape": "node bmx_scraper.js"
+    "scrape": "node bmx_scraper.js",
+    "postinstall": "node node_modules/puppeteer/install.js"
   },
   "engines": {
     "node": ">=14.0.0"
   },
   "dependencies": {
     "puppeteer": "^22.8.2"
+  },
+  "puppeteerOptions": {
+    "args": [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu"
+    ]
   }
 } 

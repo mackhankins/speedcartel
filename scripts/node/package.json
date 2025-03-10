@@ -4,14 +4,13 @@
   "description": "Scraper for USA BMX events",
   "main": "bmx_scraper.js",
   "scripts": {
-    "scrape": "node bmx_scraper.js",
-    "postinstall": "node node_modules/puppeteer/install.js"
+    "scrape": "node bmx_scraper.js"
   },
   "engines": {
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "puppeteer": "^22.8.2"
+    "puppeteer-core": "^22.8.2"
   },
   "puppeteerOptions": {
     "args": [

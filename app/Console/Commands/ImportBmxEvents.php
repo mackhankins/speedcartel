@@ -447,8 +447,11 @@ class ImportBmxEvents extends Command
      */
     protected function isPuppeteerInstalled()
     {
-        $nodeModulesPath = base_path('scripts/node/node_modules/puppeteer');
-        return File::exists($nodeModulesPath);
+        // Check for either puppeteer or puppeteer-core
+        $puppeteerPath = base_path('scripts/node/node_modules/puppeteer');
+        $puppeteerCorePath = base_path('scripts/node/node_modules/puppeteer-core');
+        
+        return File::exists($puppeteerPath) || File::exists($puppeteerCorePath);
     }
     
     /**
@@ -464,40 +467,13 @@ class ImportBmxEvents extends Command
             return false;
         }
         
-        // Check if we're on Linux and try to install Chrome dependencies
+        // Check if we're on Linux
         if (PHP_OS_FAMILY === 'Linux') {
-            $this->info('Linux detected. Checking for Chrome dependencies...');
-            
-            // Try to install Chrome dependencies if we have sudo access
-            // Note: This might not work in all environments due to permissions
-            try {
-                $this->info('Attempting to install Chrome dependencies (this may require sudo)...');
-                $chromeDepProcess = new Process(['apt-get', 'update', '-y']);
-                $chromeDepProcess->setTimeout(300);
-                $chromeDepProcess->run();
-                
-                $chromeDepProcess = new Process([
-                    'apt-get', 'install', '-y',
-                    'libx11-xcb1', 'libxcomposite1', 'libxcursor1', 'libxdamage1',
-                    'libxi6', 'libxtst6', 'libnss3', 'libcups2', 'libxss1',
-                    'libxrandr2', 'libasound2', 'libatk1.0-0', 'libatk-bridge2.0-0',
-                    'libpangocairo-1.0-0', 'libgtk-3-0', 'libgbm1'
-                ]);
-                $chromeDepProcess->setTimeout(300);
-                $chromeDepProcess->run();
-                
-                if ($chromeDepProcess->isSuccessful()) {
-                    $this->info('Chrome dependencies installed successfully.');
-                } else {
-                    $this->warn('Could not install Chrome dependencies. This might be due to permission issues.');
-                    $this->warn('The scraper might still work with the updated configuration.');
-                }
-            } catch (\Exception $e) {
-                $this->warn('Could not install Chrome dependencies: ' . $e->getMessage());
-                $this->warn('The scraper might still work with the updated configuration.');
-            }
+            $this->info('Linux detected. Note: Chrome dependencies are required but we will not attempt to install them.');
+            $this->info('The script will try to use an existing Chrome installation or fall back to HTTP requests.');
         }
         
+        // Run npm install
         $process = new Process([$npmPath, 'install'], base_path('scripts/node'));
         $process->setTimeout(300); // 5 minutes timeout
         

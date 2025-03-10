@@ -11,7 +11,7 @@
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 
 // Configuration
 const OUTPUT_FILE = process.argv[2] || path.join(process.cwd(), 'storage', 'app', 'events.json');
@@ -63,36 +63,65 @@ async function getRenderedPageContent(url) {
     ]
   };
   
-  // Add executable path for Linux if needed
-  if (isLinux) {
-    console.log('Running on Linux, using special configuration');
-    // We don't set executablePath as Puppeteer should find the right one
-  }
+  // Common Chrome paths to try on Linux
+  const chromePaths = [
+    // Environment variable (if set)
+    process.env.CHROME_BIN,
+    // Common Linux paths
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+    // Laravel Forge/Vapor common paths
+    '/usr/bin/chrome',
+    // Try to find Chrome in PATH
+    'google-chrome',
+    'chromium',
+    // Add more paths as needed
+  ].filter(Boolean); // Remove undefined entries
   
   let browser;
-  try {
-    // Try to launch with standard options
-    browser = await puppeteer.launch(launchOptions);
-  } catch (error) {
-    console.error('Failed to launch browser with standard options:', error.message);
+  let lastError;
+  
+  // Try each Chrome path until one works
+  for (const chromePath of chromePaths) {
+    try {
+      console.log(`Trying to launch Chrome from: ${chromePath}`);
+      launchOptions.executablePath = chromePath;
+      browser = await puppeteer.launch(launchOptions);
+      console.log(`Successfully launched Chrome from: ${chromePath}`);
+      break; // Exit the loop if successful
+    } catch (error) {
+      console.log(`Failed to launch Chrome from ${chromePath}: ${error.message}`);
+      lastError = error;
+      // Continue to the next path
+    }
+  }
+  
+  // If all attempts failed, throw the last error
+  if (!browser) {
+    console.error('All Chrome launch attempts failed');
     
-    // Try alternative approach for Linux
-    if (isLinux) {
-      console.log('Trying alternative launch approach for Linux...');
-      try {
-        // Try with explicit executable path if available via environment variable
-        const chromePath = process.env.CHROME_BIN || '/usr/bin/google-chrome';
-        console.log(`Trying with explicit Chrome path: ${chromePath}`);
-        
-        launchOptions.executablePath = chromePath;
-        browser = await puppeteer.launch(launchOptions);
-      } catch (altError) {
-        console.error('Alternative launch approach failed:', altError.message);
-        throw new Error(`Failed to launch browser after multiple attempts: ${error.message}, ${altError.message}`);
-      }
-    } else {
-      // Re-throw the original error if not on Linux
-      throw error;
+    // Try a fallback approach - use a simple HTTP request instead of Puppeteer
+    console.log('Falling back to simple HTTP request...');
+    try {
+      const content = await new Promise((resolve, reject) => {
+        https.get(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+          }
+        }, (res) => {
+          let data = '';
+          res.on('data', (chunk) => { data += chunk; });
+          res.on('end', () => { resolve(data); });
+        }).on('error', reject);
+      });
+      
+      console.log('Successfully fetched content using HTTP request');
+      return content;
+    } catch (httpError) {
+      console.error('HTTP fallback also failed:', httpError.message);
+      throw new Error(`Failed to fetch content: ${lastError.message}, HTTP fallback: ${httpError.message}`);
     }
   }
   
@@ -101,6 +130,9 @@ async function getRenderedPageContent(url) {
     
     // Set a reasonable viewport
     await page.setViewport({ width: 1280, height: 800 });
+    
+    // Set a user agent to avoid detection
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
     
     // Navigate to the URL
     await page.goto(url, { waitUntil: 'networkidle2' });

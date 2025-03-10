@@ -110,6 +110,12 @@ class UpcomingBirthdaysWidget extends BaseWidget
                 // Get all riders
                 $riders = $query->get();
                 
+                // If there are no riders, return a query that will return no results
+                // This prevents trying to sort by days_until in the database
+                if ($riders->isEmpty()) {
+                    return $query->whereRaw('0 = 1'); // Always false condition
+                }
+                
                 // Calculate days until birthday for each rider
                 $ridersWithDays = $riders->map(function (Rider $rider) {
                     $birthdate = Carbon::parse($rider->date_of_birth);
@@ -132,6 +138,11 @@ class UpcomingBirthdaysWidget extends BaseWidget
                 
                 // Get the IDs of the 5 riders with the closest birthdays
                 $riderIds = $ridersWithDays->pluck('id')->toArray();
+                
+                // If no rider IDs (shouldn't happen but just in case), return empty result
+                if (empty($riderIds)) {
+                    return $query->whereRaw('0 = 1'); // Always false condition
+                }
                 
                 // Modify the query to only include these riders
                 return $query->whereIn('id', $riderIds);

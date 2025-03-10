@@ -13,6 +13,7 @@ use App\Notifications\CustomVerifyEmail;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Filament\Panel;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -81,5 +82,26 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Rider::class, 'rideables')
             ->withPivot('relationship', 'status')
             ->withTimestamps();
+    }
+
+    /**
+     * Determine if the user can access the given Filament panel.
+     *
+     * @param \Filament\Panel $panel
+     * @return bool
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // Only allow verified users
+        if (!$this->hasVerifiedEmail()) {
+            return false;
+        }
+
+        // For the manage panel, require specific roles
+        if ($panel->getId() === 'manage') {
+            return $this->hasAnyRole(['super_admin']);
+        }
+
+        return false;
     }
 }

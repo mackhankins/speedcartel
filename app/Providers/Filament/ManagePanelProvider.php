@@ -23,6 +23,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\Support\Facades\Auth;
 
 class ManagePanelProvider extends PanelProvider
 {
@@ -115,10 +116,7 @@ class ManagePanelProvider extends PanelProvider
                     ->url('/manage/shield/roles')
                     ->icon('heroicon-o-shield-check')
                     ->group('User Management')
-                    ->sort(2)
-                    ->visible(function (): bool {
-                        return auth()->check() && auth()->user() && auth()->user()->hasRole('super_admin');
-                    }),
+                    ->sort(2),
             ]);
     }
 }

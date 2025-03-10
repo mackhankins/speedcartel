@@ -97,7 +97,7 @@ use Illuminate\Support\Str;
                 @foreach($sponsors as $sponsor)
                     <div class="bg-white dark:bg-light-gray rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col h-full border border-gray-200 dark:border-gray-700 hover:border-cartel-red dark:hover:border-cartel-red">
                         <!-- Logo Container -->
-                        <div class="relative h-32 sm:h-36 bg-gray-50 dark:bg-gray-800 flex items-center justify-center p-3">
+                        <div class="relative h-32 sm:h-36 bg-gray-50 dark:bg-gray-700 flex items-center justify-center p-3">
                             @if($sponsor->logo_path)
                                 <img 
                                     src="{{ asset('storage/' . $sponsor->logo_path) }}" 

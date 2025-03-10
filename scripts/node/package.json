@@ -9,15 +9,5 @@
   "engines": {
     "node": ">=14.0.0"
   },
-  "dependencies": {
-    "puppeteer-core": "^22.8.2"
-  },
-  "puppeteerOptions": {
-    "args": [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-gpu"
-    ]
-  }
+  "dependencies": {}
 } 

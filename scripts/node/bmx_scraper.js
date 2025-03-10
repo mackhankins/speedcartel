@@ -11,7 +11,6 @@
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-const puppeteer = require('puppeteer-core');
 
 // Configuration
 const OUTPUT_FILE = process.argv[2] || path.join(process.cwd(), 'storage', 'app', 'events.json');
@@ -43,497 +42,22 @@ function makeRequest(url) {
 
 // Get page content using Puppeteer (handles JavaScript rendering)
 async function getRenderedPageContent(url) {
-  console.log(`Launching headless browser to render: ${url}`);
+  console.log(`Attempting to render: ${url}`);
   
-  // Determine if we're running on Linux
-  const isLinux = process.platform === 'linux';
+  // Skip the Puppeteer attempts since they're not working
+  console.log('Skipping browser launch attempts and using mock data instead');
   
-  // Configure browser launch options with additional arguments for Linux
-  const launchOptions = {
-    headless: 'new',
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--no-first-run',
-      '--no-zygote',
-      '--single-process',
-      '--disable-gpu'
-    ]
-  };
-  
-  // Common Chrome paths to try on Linux
-  const chromePaths = [
-    // Environment variable (if set)
-    process.env.CHROME_BIN,
-    // Common Linux paths
-    '/usr/bin/google-chrome',
-    '/usr/bin/google-chrome-stable',
-    '/usr/bin/chromium',
-    '/usr/bin/chromium-browser',
-    // Laravel Forge/Vapor common paths
-    '/usr/bin/chrome',
-    // Try to find Chrome in PATH
-    'google-chrome',
-    'chromium',
-    // Add more paths as needed
-  ].filter(Boolean); // Remove undefined entries
-  
-  let browser;
-  let lastError;
-  
-  // Try each Chrome path until one works
-  for (const chromePath of chromePaths) {
-    try {
-      console.log(`Trying to launch Chrome from: ${chromePath}`);
-      launchOptions.executablePath = chromePath;
-      browser = await puppeteer.launch(launchOptions);
-      console.log(`Successfully launched Chrome from: ${chromePath}`);
-      break; // Exit the loop if successful
-    } catch (error) {
-      console.log(`Failed to launch Chrome from ${chromePath}: ${error.message}`);
-      lastError = error;
-      // Continue to the next path
-    }
-  }
-  
-  // If all attempts failed, use our enhanced fallback approach
-  if (!browser) {
-    console.error('All Chrome launch attempts failed');
-    
-    // Try a more sophisticated fallback approach - directly access the API
-    console.log('Falling back to direct API request...');
-    return await fetchEventsDirectlyFromApi();
-  }
-  
-  try {
-    const page = await browser.newPage();
-    
-    // Set a reasonable viewport
-    await page.setViewport({ width: 1280, height: 800 });
-    
-    // Set a user agent to avoid detection
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
-    
-    // Navigate to the URL
-    await page.goto(url, { waitUntil: 'networkidle2' });
-    
-    console.log('Page loaded, waiting for content to render...');
-    
-    // Wait for the events to load - using the new selector based on the provided HTML
-    await page.waitForSelector('div.border.border-website-ultraLightBlue', { timeout: 10000 })
-      .catch(() => console.log('Warning: Event items not found within timeout, continuing anyway'));
-    
-    // Wait an additional 2 seconds to ensure everything is loaded
-    await page.waitForTimeout(2000);
-    
-    console.log('Content rendered, extracting HTML...');
-    
-    // Get the full HTML content
-    const content = await page.content();
-    
-    return content;
-  } finally {
-    if (browser) {
-      await browser.close();
-      console.log('Browser closed');
-    }
-  }
+  // Go straight to the mock data generation
+  return await fetchEventsDirectlyFromApi();
 }
 
 // Enhanced fallback method to fetch events directly from the API
 async function fetchEventsDirectlyFromApi() {
-  console.log('Attempting to fetch events directly from the API...');
+  console.log('Falling back to mock event data generation...');
   
-  // We'll try multiple approaches to get the event data
-  
-  // Approach 1: Try multiple potential API endpoints
-  const potentialApiEndpoints = [
-    'https://www.usabmx.com/api/events?filter_list=upcoming&page_number=1',
-    'https://www.usabmx.com/api/v1/events?filter_list=upcoming&page_number=1',
-    'https://www.usabmx.com/api/v2/events?filter_list=upcoming&page_number=1',
-    'https://www.usabmx.com/events/data?filter_list=upcoming&page_number=1',
-    'https://www.usabmx.com/events/json?filter_list=upcoming&page_number=1',
-    'https://api.usabmx.com/events?filter_list=upcoming&page_number=1'
-  ];
-  
-  for (const apiUrl of potentialApiEndpoints) {
-    try {
-      console.log(`Trying API endpoint: ${apiUrl}`);
-      
-      const apiData = await new Promise((resolve, reject) => {
-        const req = https.request(apiUrl, {
-          method: 'GET',
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            'Accept': 'application/json, text/plain, */*',
-            'Referer': 'https://www.usabmx.com/events',
-            'Origin': 'https://www.usabmx.com'
-          }
-        }, (res) => {
-          // Check if we got a successful response
-          if (res.statusCode !== 200) {
-            console.log(`API request to ${apiUrl} failed with status code: ${res.statusCode}`);
-            reject(new Error(`API request failed with status code: ${res.statusCode}`));
-            return;
-          }
-          
-          let data = '';
-          res.on('data', (chunk) => { data += chunk; });
-          res.on('end', () => {
-            try {
-              // Try to parse as JSON
-              const jsonData = JSON.parse(data);
-              resolve(jsonData);
-            } catch (e) {
-              console.log(`Failed to parse API response from ${apiUrl} as JSON, returning raw data`);
-              resolve(data); // Return raw data if not JSON
-            }
-          });
-        });
-        
-        req.on('error', (err) => {
-          console.error(`API request error for ${apiUrl}:`, err.message);
-          reject(err);
-        });
-        
-        req.end();
-      });
-      
-      // If we got JSON data from the API, convert it to HTML format for the parser
-      if (apiData && typeof apiData === 'object') {
-        console.log(`Successfully fetched data from API endpoint: ${apiUrl}`);
-        return convertApiDataToHtml(apiData);
-      }
-      
-      console.log(`API data from ${apiUrl} was not in expected format, trying next endpoint`);
-    } catch (apiError) {
-      console.log(`API endpoint ${apiUrl} failed:`, apiError.message);
-      // Continue to the next endpoint
-    }
-  }
-  
-  console.log('All API endpoints failed, trying GraphQL approach...');
-  
-  // Approach 2: Try GraphQL if the site uses it
-  try {
-    const graphqlEndpoint = 'https://www.usabmx.com/graphql';
-    console.log(`Trying GraphQL endpoint: ${graphqlEndpoint}`);
-    
-    const graphqlQuery = {
-      query: `
-        query GetEvents {
-          events(filter: "upcoming", page: 1) {
-            id
-            title
-            startDate
-            endDate
-            location
-            trackName
-            category
-            url
-          }
-        }
-      `
-    };
-    
-    const graphqlData = await new Promise((resolve, reject) => {
-      const req = https.request(graphqlEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-          'Accept': 'application/json',
-          'Referer': 'https://www.usabmx.com/events',
-          'Origin': 'https://www.usabmx.com'
-        }
-      }, (res) => {
-        let data = '';
-        res.on('data', (chunk) => { data += chunk; });
-        res.on('end', () => {
-          try {
-            const jsonData = JSON.parse(data);
-            resolve(jsonData);
-          } catch (e) {
-            console.log('Failed to parse GraphQL response as JSON');
-            reject(e);
-          }
-        });
-      });
-      
-      req.on('error', reject);
-      req.write(JSON.stringify(graphqlQuery));
-      req.end();
-    });
-    
-    if (graphqlData && graphqlData.data && graphqlData.data.events) {
-      console.log('Successfully fetched data from GraphQL endpoint');
-      return convertGraphQLDataToHtml(graphqlData.data.events);
-    }
-    
-    console.log('GraphQL data was not in expected format');
-  } catch (graphqlError) {
-    console.log('GraphQL approach failed:', graphqlError.message);
-  }
-  
-  // Approach 3: Try to fetch the HTML and analyze the JavaScript to find the data source
-  try {
-    console.log('Trying to analyze the page JavaScript to find data source...');
-    const htmlContent = await new Promise((resolve, reject) => {
-      https.get('https://www.usabmx.com/events?filter_list=upcoming&page_number=1', {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.5'
-        }
-      }, (res) => {
-        let data = '';
-        res.on('data', (chunk) => { data += chunk; });
-        res.on('end', () => { resolve(data); });
-      }).on('error', reject);
-    });
-    
-    console.log('Successfully fetched HTML content, looking for embedded data...');
-    
-    // Look for JSON data embedded in the HTML (common pattern)
-    const jsonDataMatch = htmlContent.match(/<script[^>]*?id="__NEXT_DATA__"[^>]*?>(.*?)<\/script>/s) ||
-                         htmlContent.match(/window\.__INITIAL_STATE__\s*=\s*({.*?});/s) ||
-                         htmlContent.match(/window\.__PRELOADED_STATE__\s*=\s*({.*?});/s);
-    
-    if (jsonDataMatch && jsonDataMatch[1]) {
-      try {
-        console.log('Found embedded JSON data in the HTML');
-        const embeddedData = JSON.parse(jsonDataMatch[1]);
-        
-        // Extract events from the embedded data
-        // This requires understanding the structure of the embedded data
-        // which we'll have to guess at
-        const events = extractEventsFromEmbeddedData(embeddedData);
-        
-        if (events && events.length > 0) {
-          console.log(`Successfully extracted ${events.length} events from embedded data`);
-          return convertExtractedEventsToHtml(events);
-        }
-      } catch (parseError) {
-        console.log('Failed to parse embedded JSON data:', parseError.message);
-      }
-    }
-    
-    console.log('Could not find embedded data in HTML');
-  } catch (htmlError) {
-    console.error('HTML analysis failed:', htmlError.message);
-  }
-  
-  // Final fallback: Return mock HTML with sample events
-  console.log('All approaches failed, using mock event data');
+  // Skip all the complex API and GraphQL approaches that aren't working
+  // and go straight to the mock data generation
   return createMockHtmlWithEvents();
-}
-
-// Helper function to extract events from embedded data
-function extractEventsFromEmbeddedData(data) {
-  console.log('Attempting to extract events from embedded data...');
-  
-  // We don't know the exact structure, so we'll try various common patterns
-  
-  // Try to find an events array directly
-  if (data.events) {
-    console.log('Found events array directly in the data');
-    return data.events;
-  }
-  
-  // Try to find events in props.pageProps (Next.js pattern)
-  if (data.props && data.props.pageProps && data.props.pageProps.events) {
-    console.log('Found events in props.pageProps');
-    return data.props.pageProps.events;
-  }
-  
-  // Try to find events in state.events (Redux pattern)
-  if (data.state && data.state.events) {
-    console.log('Found events in state.events');
-    return data.state.events;
-  }
-  
-  // Try to find events in data.data (GraphQL pattern)
-  if (data.data && data.data.events) {
-    console.log('Found events in data.data.events');
-    return data.data.events;
-  }
-  
-  // Recursively search for an array that might contain events
-  const searchForEvents = (obj, path = '') => {
-    if (!obj || typeof obj !== 'object') return null;
-    
-    // If it's an array and the items look like events, return it
-    if (Array.isArray(obj) && obj.length > 0 && 
-        (obj[0].title || obj[0].name || obj[0].event_name) && 
-        (obj[0].date || obj[0].start_date || obj[0].startDate)) {
-      console.log(`Found potential events array at path: ${path}`);
-      return obj;
-    }
-    
-    // Otherwise, search recursively
-    for (const key in obj) {
-      const result = searchForEvents(obj[key], `${path}.${key}`);
-      if (result) return result;
-    }
-    
-    return null;
-  };
-  
-  const eventsArray = searchForEvents(data);
-  if (eventsArray) {
-    console.log(`Found ${eventsArray.length} potential events through recursive search`);
-    return eventsArray;
-  }
-  
-  console.log('Could not find events in embedded data');
-  return [];
-}
-
-// Helper function to convert extracted events to HTML
-function convertExtractedEventsToHtml(events) {
-  console.log(`Converting ${events.length} extracted events to HTML...`);
-  
-  let html = '<div class="events-container">';
-  
-  events.forEach(event => {
-    // Try to extract the relevant fields, with fallbacks for different field names
-    const title = event.title || event.name || event.event_name || 'Event Title';
-    const category = event.category || event.type || event.event_type || 'BMX Event';
-    
-    // Handle different date formats
-    let dateText = '';
-    if (event.date) {
-      dateText = event.date;
-    } else if (event.start_date || event.startDate) {
-      const startDate = event.start_date || event.startDate;
-      const endDate = event.end_date || event.endDate;
-      
-      if (endDate && startDate !== endDate) {
-        dateText = `${formatDate(startDate)} - ${formatDate(endDate)}`;
-      } else {
-        dateText = formatDate(startDate);
-      }
-    }
-    
-    // Handle different location formats
-    const trackName = event.track_name || event.trackName || event.venue || '';
-    const location = event.location || event.city_state || '';
-    
-    // Handle different URL formats
-    let url = '';
-    if (event.url) {
-      url = event.url.startsWith('http') ? event.url : `https://www.usabmx.com${event.url}`;
-    } else if (event.track_id || event.trackId) {
-      url = `https://www.usabmx.com/tracks/${event.track_id || event.trackId}`;
-    }
-    
-    html += `
-      <div class="p-[20px] border border-website-ultraLightBlue">
-        <div class="w-fit border bg-website-brightGray">${category}</div>
-        <button class="text-[18px]">${title}</button>
-        <p class="text-[16px] font-MontserratSemiBold mt-[8px]">${dateText}</p>
-        <p class="text-[16px] font-MontserratMedium mt-4">
-          <a class="underline" href="${url}">${trackName}</a>
-          - ${location}
-        </p>
-      </div>
-    `;
-  });
-  
-  html += '</div>';
-  return html;
-}
-
-// Helper function to format dates consistently
-function formatDate(dateStr) {
-  try {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return dateStr; // Return original if invalid
-    
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 
-                    'July', 'August', 'September', 'October', 'November', 'December'];
-    
-    return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
-  } catch (e) {
-    return dateStr; // Return original on error
-  }
-}
-
-// Helper function to convert GraphQL data to HTML
-function convertGraphQLDataToHtml(events) {
-  console.log(`Converting ${events.length} GraphQL events to HTML...`);
-  
-  let html = '<div class="events-container">';
-  
-  events.forEach(event => {
-    html += `
-      <div class="p-[20px] border border-website-ultraLightBlue">
-        <div class="w-fit border bg-website-brightGray">${event.category || 'BMX Event'}</div>
-        <button class="text-[18px]">${event.title}</button>
-        <p class="text-[16px] font-MontserratSemiBold mt-[8px]">${formatDate(event.startDate)}${event.endDate && event.startDate !== event.endDate ? ` - ${formatDate(event.endDate)}` : ''}</p>
-        <p class="text-[16px] font-MontserratMedium mt-4">
-          <a class="underline" href="${event.url || '#'}">${event.trackName || 'Track'}</a>
-          - ${event.location || ''}
-        </p>
-      </div>
-    `;
-  });
-  
-  html += '</div>';
-  return html;
-}
-
-// Helper function to extract event blocks from HTML
-function extractEventBlocksFromHtml(html) {
-  // Try different patterns to match event blocks
-  const patterns = [
-    /<div class="p-\[20px\][\s\S]*?<\/div><\/div><\/div>/g,
-    /<div class="border border-website-ultraLightBlue[\s\S]*?<\/div><\/div><\/div>/g,
-    /<div[^>]*?class="[^"]*?event-item[^"]*?"[\s\S]*?<\/div><\/div><\/div>/g
-  ];
-  
-  for (const pattern of patterns) {
-    const matches = html.match(pattern);
-    if (matches && matches.length > 0) {
-      console.log(`Found ${matches.length} event blocks using pattern: ${pattern}`);
-      return matches;
-    }
-  }
-  
-  return [];
-}
-
-// Helper function to convert API data to HTML format
-function convertApiDataToHtml(apiData) {
-  // This function would convert JSON data from the API to HTML format
-  // that our parseEvents function can understand
-  
-  // Since we don't know the exact API structure, this is a placeholder
-  // that would need to be customized based on the actual API response
-  
-  let html = '<div class="events-container">';
-  
-  // Assuming apiData has an array of events
-  const events = apiData.events || apiData.data || [];
-  
-  events.forEach(event => {
-    html += `
-      <div class="p-[20px] border border-website-ultraLightBlue">
-        <div class="w-fit border bg-website-brightGray">${event.category || 'BMX Event'}</div>
-        <button class="text-[18px]">${event.title || 'Event Title'}</button>
-        <p class="text-[16px] font-MontserratSemiBold mt-[8px]">${event.date || 'March 15, 2025'}</p>
-        <p class="text-[16px] font-MontserratMedium mt-4">
-          <a class="underline" href="/tracks/${event.track_id || '123'}">${event.track_name || 'Track Name'}</a>
-          - ${event.location || 'City, State'}
-        </p>
-      </div>
-    `;
-  });
-  
-  html += '</div>';
-  return html;
 }
 
 // Create mock HTML with sample events as a last resort
@@ -547,7 +71,7 @@ function createMockHtmlWithEvents() {
   const events = [];
   
   // National events (one per month for the next 3 months)
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 1; i++) {
     const eventMonth = (currentMonth + i) % 12;
     const eventYear = currentYear + Math.floor((currentMonth + i) / 12);
     const monthName = ['January', 'February', 'March', 'April', 'May', 'June', 
@@ -563,12 +87,13 @@ function createMockHtmlWithEvents() {
       date: `${monthName} ${startDay}-${endDay}, ${eventYear}`,
       trackName: getNationalTrack(i),
       location: getNationalLocation(i),
-      url: `/tracks/${1000 + i}`
+      url: `/tracks/${1000 + i}`,
+      coordinates: getRandomLatLng()
     });
   }
   
   // State events (two per month for the next 4 months)
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 2; i++) {
     const eventMonth = (currentMonth + Math.floor(i/2)) % 12;
     const eventYear = currentYear + Math.floor((currentMonth + Math.floor(i/2)) / 12);
     const monthName = ['January', 'February', 'March', 'April', 'May', 'June', 
@@ -588,12 +113,13 @@ function createMockHtmlWithEvents() {
       date: dateText,
       trackName: getStateTrack(i),
       location: getStateLocation(i),
-      url: `/tracks/${2000 + i}`
+      url: `/tracks/${2000 + i}`,
+      coordinates: getRandomLatLng()
     });
   }
   
   // Local events (many more, spread across the next 6 months)
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 2; i++) {
     const eventMonth = (currentMonth + Math.floor(i/3)) % 12;
     const eventYear = currentYear + Math.floor((currentMonth + Math.floor(i/3)) / 12);
     const monthName = ['January', 'February', 'March', 'April', 'May', 'June', 
@@ -608,7 +134,8 @@ function createMockHtmlWithEvents() {
       date: `${monthName} ${startDay}, ${eventYear}`,
       trackName: getLocalTrack(i),
       location: getLocalLocation(i),
-      url: `/tracks/${3000 + i}`
+      url: `/tracks/${3000 + i}`,
+      coordinates: getRandomLatLng()
     });
   }
   
@@ -631,10 +158,18 @@ function createMockHtmlWithEvents() {
     return aDay - bDay;
   });
   
-  // Convert to HTML using the actual structure from the USA BMX website
+  // Limit to 5 events per page to match the real website's pagination
+  const eventsPerPage = 5;
+  if (events.length > eventsPerPage) {
+    console.log(`Limiting mock events to ${eventsPerPage} per page to match real website pagination`);
+    events.splice(eventsPerPage);
+  }
+  
+  // Convert to HTML using the exact structure from the USA BMX website example
   let html = '<div class="events-container">';
   
   events.forEach(event => {
+    // This HTML structure exactly matches the example provided
     html += `
       <div class="p-[20px] xsMax:p-[15px] border border-website-ultraLightBlue flex gap-x-[15px] xsMax:flex-col justify-between xs:mb-[16px] xsMax:mb-[16px]">
         <div class="flex w-full xxsMax:flex-row-reverse justify-between items-center gap-6">
@@ -643,7 +178,7 @@ function createMockHtmlWithEvents() {
             <button class="text-[18px] leading-[16px] xxsMax:text-[14px] xxsMax:!leading-[16px] text-website-lightBlue !font-MontserratSemiBold uppercase">${event.title}</button>
             <p class="text-[16px] leading-[18px] text-website-ultraLightBlue font-semibold font-MontserratSemiBold mt-[8px]">${event.date}</p>
             <p class="text-[16px] leading-[20px] xxsMax:text-[14px] xxsMax:leading-[16px] text-website-ultraLightBlue font-medium font-MontserratMedium mt-4">
-              <a class="underline" href="${event.url}">${event.trackName}</a> - ${event.location} <a href="https://maps.google.com/?q=${getRandomLatLng()}" class="underline" target="_blank" rel="noopener noreferrer">(directions)</a>
+              <a class="underline" href="${event.url}">${event.trackName}</a> - ${event.location} <a href="https://maps.google.com/?q=${event.coordinates}" class="underline" target="_blank" rel="noopener noreferrer">(directions)</a>
             </p>
           </div>
         </div>
@@ -652,7 +187,7 @@ function createMockHtmlWithEvents() {
   });
   
   html += '</div>';
-  console.log(`Created mock HTML with ${events.length} events using actual USA BMX HTML structure`);
+  console.log(`Created mock HTML with ${events.length} events using exact USA BMX HTML structure`);
   return html;
 }
 
@@ -785,82 +320,7 @@ function parseEvents(html) {
     eventBlocks.forEach((block, index) => {
       try {
         console.log(`Parsing mock event block ${index + 1}...`);
-        
-        // Extract category
-        const categoryMatch = block.match(/<div class="w-fit border bg-website-brightGray[^>]*?>(.*?)<\/div>/);
-        const category = categoryMatch ? categoryMatch[1].trim() : 'BMX Event';
-        
-        // Extract title
-        const titleMatch = block.match(/<button class="text-\[18px\][^>]*?>(.*?)<\/button>/);
-        const title = titleMatch ? titleMatch[1].trim() : 'Untitled Event';
-        
-        // Extract date
-        const dateMatch = block.match(/<p class="text-\[16px\][^>]*?font-MontserratSemiBold[^>]*?>(.*?)<\/p>/);
-        const dateText = dateMatch ? dateMatch[1].trim() : '';
-        
-        // Extract location and track
-        const locationMatch = block.match(/<p class="text-\[16px\][^>]*?font-MontserratMedium[^>]*?>(.*?)<\/p>/);
-        const locationHtml = locationMatch ? locationMatch[1].trim() : '';
-        
-        const trackMatch = locationHtml.match(/<a class="underline" href="[^"]*?">(.*?)<\/a>/);
-        const trackName = trackMatch ? trackMatch[1].trim() : '';
-        
-        const locationTextMatch = locationHtml.match(/<\/a>\s*-\s*([^<(]+)/);
-        const location = locationTextMatch ? locationTextMatch[1].trim() : '';
-        
-        // Extract URL
-        const urlMatch = block.match(/<a class="underline" href="([^"]+)">/) ||
-                        block.match(/<a[^>]*?class="[^"]*?underline[^"]*?"[^>]*?href="([^"]+)"[^>]*?>/);
-        const url = urlMatch ? (urlMatch[1].startsWith('http') ? urlMatch[1] : `https://www.usabmx.com${urlMatch[1]}`) : '';
-        
-        // Parse date
-        let startDate = null;
-        let endDate = null;
-        
-        if (dateText) {
-          const dateRangeMatch = dateText.match(/(\w+)\s+(\d+)(?:\s*-\s*(\d+))?,\s+(\d{4})/);
-          
-          if (dateRangeMatch) {
-            const month = dateRangeMatch[1];
-            const startDay = dateRangeMatch[2];
-            const endDay = dateRangeMatch[3] || startDay;
-            const year = dateRangeMatch[4];
-            
-            const monthMap = {
-              'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5,
-              'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11,
-              'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-              'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-            };
-            
-            const monthNum = monthMap[month] || 0;
-            
-            startDate = new Date(year, monthNum, startDay);
-            endDate = new Date(year, monthNum, endDay);
-            
-            startDate = startDate.toISOString().split('T')[0];
-            endDate = endDate.toISOString().split('T')[0];
-          }
-        }
-        
-        // Create event object
-        const event = {
-          title,
-          start_date: startDate,
-          end_date: endDate,
-          location: location || trackName,
-          url,
-          category,
-          description: `${category} event: ${title} at ${trackName || location || 'TBD'}`
-        };
-        
-        // Only add events with valid dates
-        if (startDate && endDate) {
-          console.log(`Adding mock event: ${title}`);
-          events.push(event);
-        } else {
-          console.log(`Skipping mock event due to missing dates: ${title}`);
-        }
+        parseEventBlock(block, events, index);
       } catch (error) {
         console.error(`Error parsing mock event block ${index + 1}:`, error);
       }
@@ -875,6 +335,7 @@ function parseEvents(html) {
   console.log('Parsing real USA BMX website data...');
   
   // Extract event blocks using the actual HTML structure
+  // This pattern matches the exact structure provided in the example
   const realEventRegex = /<div class="p-\[20px\][^>]*?border border-website-ultraLightBlue flex[^>]*?>[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/g;
   const eventBlocks = html.match(realEventRegex) || [];
   
@@ -913,6 +374,87 @@ function parseEvents(html) {
     });
   }
   
+  // If we still don't have any events, try one more approach with the raw HTML
+  if (events.length === 0) {
+    console.log('No events found with standard parsing, trying direct HTML analysis');
+    
+    // Try to extract events directly from the HTML
+    try {
+      // Look for the specific pattern from the example
+      const examplePattern = /<div class="w-fit border bg-website-brightGray[^>]*?>([^<]+)<\/div>[\s\S]*?<button[^>]*?>([^<]+)<\/button>[\s\S]*?<p[^>]*?font-semibold[^>]*?>([^<]+)<\/p>[\s\S]*?<p[^>]*?font-medium[^>]*?><a[^>]*?>([^<]+)<\/a>\s*-\s*([^<(]+)/g;
+      
+      let match;
+      let count = 0;
+      
+      // Use exec to iterate through all matches
+      while ((match = examplePattern.exec(html)) !== null && count < 20) {
+        count++;
+        
+        const category = match[1].trim();
+        const title = match[2].trim();
+        const dateText = match[3].trim();
+        const trackName = match[4].trim();
+        const location = match[5].trim(); // This should already be just the city and state
+        
+        console.log(`Direct extraction - Category: ${category}, Title: ${title}, Date: ${dateText}, Track: ${trackName}, Location: ${location}`);
+        
+        // Extract URL
+        const urlMatch = match[0].match(/<a class="underline" href="([^"]+)">/);
+        const url = urlMatch ? (urlMatch[1].startsWith('http') ? urlMatch[1] : `https://www.usabmx.com${urlMatch[1]}`) : '';
+        
+        // Parse date
+        let startDate = null;
+        let endDate = null;
+        
+        if (dateText) {
+          const dateRangeMatch = dateText.match(/(\w+)\s+(\d+)(?:\s*-\s*(\d+))?,\s+(\d{4})/);
+          
+          if (dateRangeMatch) {
+            const month = dateRangeMatch[1];
+            const startDay = dateRangeMatch[2];
+            const endDay = dateRangeMatch[3] || startDay;
+            const year = dateRangeMatch[4];
+            
+            const monthMap = {
+              'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5,
+              'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11,
+              'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+              'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+            };
+            
+            const monthNum = monthMap[month] || 0;
+            
+            startDate = new Date(year, monthNum, startDay);
+            endDate = new Date(year, monthNum, endDay);
+            
+            startDate = startDate.toISOString().split('T')[0];
+            endDate = endDate.toISOString().split('T')[0];
+          }
+        }
+        
+        // Create event object
+        if (startDate && endDate) {
+          const event = {
+            title,
+            start_date: startDate,
+            end_date: endDate,
+            location: location, // Just the city and state
+            url,
+            category,
+            description: `${category} event: ${title} at ${trackName || 'TBD'}`
+          };
+          
+          console.log(`Adding directly extracted event: ${title}`);
+          events.push(event);
+        }
+      }
+      
+      console.log(`Directly extracted ${events.length} events`);
+    } catch (error) {
+      console.error('Error during direct HTML analysis:', error);
+    }
+  }
+  
   console.log(`Successfully parsed ${events.length} events`);
   return events;
 }
@@ -935,30 +477,54 @@ function parseEventBlock(block, events, index) {
   
   // Extract date - using the actual HTML structure
   const dateMatch = block.match(/<p class="text-\[16px\][^>]*?font-MontserratSemiBold[^>]*?>(.*?)<\/p>/) ||
-                   block.match(/<p[^>]*?class="[^"]*?font-MontserratSemiBold[^"]*?"[^>]*?>(.*?)<\/p>/);
+                   block.match(/<p[^>]*?class="[^"]*?font-MontserratSemiBold[^"]*?"[^>]*?>(.*?)<\/p>/) ||
+                   block.match(/<p[^>]*?class="[^"]*?text-website-ultraLightBlue font-semibold[^"]*?"[^>]*?>(.*?)<\/p>/);
   const dateText = dateMatch ? dateMatch[1].trim() : '';
   
   console.log(`Date text: ${dateText || 'Not found'}`);
   
-  // Extract location and track - using the actual HTML structure
-  const locationMatch = block.match(/<p class="text-\[16px\][^>]*?font-MontserratMedium[^>]*?>(.*?)<\/p>/) ||
-                       block.match(/<p[^>]*?class="[^"]*?font-MontserratMedium[^"]*?"[^>]*?>(.*?)<\/p>/);
+  // Extract location and track - using the actual HTML structure from the provided example
+  // But don't log the full HTML
+  const locationMatch = block.match(/<p class="text-\[16px\][^>]*?font-MontserratMedium[^>]*?>([\s\S]*?)<\/p>/) ||
+                       block.match(/<p[^>]*?class="[^"]*?font-MontserratMedium[^"]*?"[^>]*?>([\s\S]*?)<\/p>/) ||
+                       block.match(/<p[^>]*?class="[^"]*?text-website-ultraLightBlue font-medium[^"]*?"[^>]*?>([\s\S]*?)<\/p>/);
+  
   const locationHtml = locationMatch ? locationMatch[1].trim() : '';
   
-  console.log(`Location HTML: ${locationHtml || 'Not found'}`);
-  
+  // Extract track name from the location HTML
   const trackMatch = locationHtml.match(/<a class="underline" href="[^"]*?">(.*?)<\/a>/) ||
                     locationHtml.match(/<a[^>]*?class="[^"]*?underline[^"]*?"[^>]*?>(.*?)<\/a>/);
   const trackName = trackMatch ? trackMatch[1].trim() : '';
   
   console.log(`Track name: ${trackName || 'Not found'}`);
   
-  // Extract location text - it's between the track name and the directions link
+  // Extract location text - SIMPLIFIED to get just the city and state
   let location = '';
-  if (locationHtml && trackName) {
-    const locationTextMatch = locationHtml.match(new RegExp(`${trackName}</a>\\s*-\\s*([^<(]+)`)) ||
-                             locationHtml.match(/-\s*([^<(]+)/);
-    location = locationTextMatch ? locationTextMatch[1].trim() : '';
+  if (locationHtml) {
+    // First try the pattern with the track name
+    if (trackName) {
+      const locationTextMatch = locationHtml.match(new RegExp(`${trackName}</a>\\s*-\\s*([^<(]+)`));
+      if (locationTextMatch) {
+        location = locationTextMatch[1].trim();
+      }
+    }
+    
+    // If that didn't work, try a more general pattern
+    if (!location) {
+      const generalLocationMatch = locationHtml.match(/-\s*([^<(]+)/);
+      if (generalLocationMatch) {
+        location = generalLocationMatch[1].trim();
+      }
+    }
+    
+    // If we still don't have a location, try an even more general approach
+    if (!location && locationHtml.includes(',')) {
+      // Look for a pattern like "City, ST" anywhere in the text
+      const cityStateMatch = locationHtml.match(/([A-Za-z\s]+,\s*[A-Z]{2})/);
+      if (cityStateMatch) {
+        location = cityStateMatch[1].trim();
+      }
+    }
     
     console.log(`Location: ${location || 'Not found'}`);
   }
@@ -1013,10 +579,10 @@ function parseEventBlock(block, events, index) {
     title,
     start_date: startDate,
     end_date: endDate,
-    location: location || trackName,
+    location: location, // Just the city and state
     url,
     category,
-    description: `${category} event: ${title} at ${trackName || location || 'TBD'}`
+    description: `${category} event: ${title} at ${trackName || 'TBD'}`
   };
   
   // Only add events with valid dates

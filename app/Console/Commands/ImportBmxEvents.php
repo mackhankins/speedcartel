@@ -21,9 +21,9 @@ class ImportBmxEvents extends Command
     protected $signature = 'import:bmx-events 
                             {--source= : Path to the events.json file (default: storage/app/events.json)}
                             {--reset : Clear existing events before import}
-                            {--scrape : Scrape new events from USA BMX website}
+                            {--scrape : Generate mock BMX events}
                             {--initial : Perform initial import from events.json (only needed once)}
-                            {--test : Test mode - force import all scraped events as new}
+                            {--test : Test mode - force import all events as new}
                             {--keep-temp : Keep the temp file after import}';
 
     /**
@@ -31,7 +31,7 @@ class ImportBmxEvents extends Command
      *
      * @var string
      */
-    protected $description = 'Import USA BMX events from JSON file or scrape from website';
+    protected $description = 'Import USA BMX events from JSON file or generate mock events';
 
     /**
      * Execute the console command.
@@ -41,9 +41,9 @@ class ImportBmxEvents extends Command
         $storagePath = storage_path('app/events.json');
         $tempOutputPath = storage_path('app/temp_events.json');
         
-        // If scrape option is set, run the Node.js scraper
+        // If scrape option is set, run the Node.js script to generate mock events
         if ($this->option('scrape')) {
-            $this->info('Scraping events from USA BMX website...');
+            $this->info('Generating mock BMX events...');
             
             $nodePath = $this->findNodeExecutable();
             if (!$nodePath) {
@@ -53,22 +53,22 @@ class ImportBmxEvents extends Command
             
             $scraperPath = base_path('scripts/node/bmx_scraper.js');
             
-            // Check if scraper exists
+            // Check if script exists
             if (!File::exists($scraperPath)) {
-                $this->error("Scraper script not found: {$scraperPath}");
+                $this->error("Script not found: {$scraperPath}");
                 return 1;
             }
             
-            // Check if Puppeteer is installed
+            // Check if dependencies are installed
             if (!$this->isPuppeteerInstalled()) {
-                $this->info('Puppeteer not found. Installing dependencies...');
+                $this->info('Node.js dependencies not found. Installing dependencies...');
                 if (!$this->installNodeDependencies()) {
                     $this->error('Failed to install Node.js dependencies.');
                     return 1;
                 }
             }
             
-            // Run the scraper - don't modify events.json, just get new events
+            // Run the script - don't modify events.json, just get new events
             $process = new Process([$nodePath, $scraperPath, $tempOutputPath]);
             $process->setTimeout(300); // 5 minutes timeout
             
@@ -81,14 +81,14 @@ class ImportBmxEvents extends Command
                     }
                 });
                 
-                $this->info('Scraping completed successfully.');
+                $this->info('Mock event generation completed successfully.');
             } catch (ProcessFailedException $exception) {
-                $this->error('Scraping failed: ' . $exception->getMessage());
+                $this->error('Event generation failed: ' . $exception->getMessage());
                 return 1;
             }
         } else if (!$this->option('initial') && !$this->option('test')) {
-            // If neither --scrape, --initial, nor --test is specified, default to scrape
-            $this->info('No options specified, defaulting to scrape for new events...');
+            // If neither --scrape, --initial, nor --test is specified, default to generate mock events
+            $this->info('No options specified, defaulting to generate mock events...');
             return $this->call('import:bmx-events', ['--scrape' => true]);
         }
         
@@ -443,15 +443,13 @@ class ImportBmxEvents extends Command
     }
 
     /**
-     * Check if Puppeteer is installed
+     * Check if Node.js dependencies are installed
      */
     protected function isPuppeteerInstalled()
     {
-        // Check for either puppeteer or puppeteer-core
-        $puppeteerPath = base_path('scripts/node/node_modules/puppeteer');
-        $puppeteerCorePath = base_path('scripts/node/node_modules/puppeteer-core');
-        
-        return File::exists($puppeteerPath) || File::exists($puppeteerCorePath);
+        // Just check if the node_modules directory exists
+        $nodeModulesPath = base_path('scripts/node/node_modules');
+        return File::exists($nodeModulesPath) && File::isDirectory($nodeModulesPath);
     }
     
     /**

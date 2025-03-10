@@ -1,3 +1,7 @@
+@php
+use Illuminate\Support\Str;
+@endphp
+
 <div class="bg-white dark:bg-darker-gray min-h-screen">
     <!-- Hero Section -->
     <div class="relative bg-gradient-to-r from-gray-800 to-gray-900 py-12 md:py-16">
@@ -79,7 +83,7 @@
                         
                         <!-- Contact Button -->
                         <div class="mt-2 flex justify-center">
-                            <a href="mailto:sponsors@speedcartel.com" class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-900 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cartel-red transition-colors duration-200">
+                            <a href="{{ route('contact') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-900 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cartel-red transition-colors duration-200">
                                 <svg class="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                 </svg>

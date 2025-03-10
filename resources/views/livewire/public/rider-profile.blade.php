@@ -1,3 +1,7 @@
+@php
+use Illuminate\Support\Str;
+@endphp
+
 <div>
     <!-- Hero Section -->
     <div class="relative bg-gradient-to-r from-gray-800 to-gray-900 h-40 sm:h-52">

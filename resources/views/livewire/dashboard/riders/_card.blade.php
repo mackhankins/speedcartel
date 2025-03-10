@@ -1,3 +1,7 @@
+@php
+use Illuminate\Support\Str;
+@endphp
+
 <div class="group bg-white dark:bg-darker-gray rounded-xl overflow-hidden transition-all duration-200 border border-gray-100 dark:border-gray-700 hover:shadow-md">
     <!-- Card Header with Profile Image and Name -->
     <div class="relative">

@@ -307,21 +307,24 @@ class Settings extends Component
     public function confirmTwoFactorAuthentication()
     {
         $this->validate([
-            'confirmationCode' => ['required', 'string'],
+            'confirmationCode' => 'required|string',
         ]);
 
-        app(ConfirmTwoFactorAuthentication::class)(Auth::user(), $this->confirmationCode);
-
-        $this->showingQrCode = false;
-        $this->showingConfirmation = false;
-        $this->showingRecoveryCodes = true;
-        $this->enabled2FA = true;
+        try {
+            app(ConfirmTwoFactorAuthentication::class)(Auth::user(), $this->confirmationCode);
+            $this->showingQrCode = false;
+            $this->showingConfirmation = false;
+            $this->showingRecoveryCodes = true;
+        } catch (\Exception $e) {
+            $this->addError('confirmationCode', $e->getMessage());
+        }
     }
 
     #[Title('Settings')]
     public function render()
     {
         $user = Auth::user();
+        
         return view('livewire.dashboard.settings', [
             'shippingAddresses' => $user->addresses()->where('type', 'shipping')->get(),
             'billingAddresses' => $user->addresses()->where('type', 'billing')->get(),

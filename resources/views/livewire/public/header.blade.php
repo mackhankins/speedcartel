@@ -31,8 +31,8 @@
                     <a href="{{ route('cart') }}"
                         class="relative p-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray rounded-lg">
                         <x-icon name="shopping-cart" class="w-6 h-6" />
-                        <span
-                            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center mt-0.5">0</span>
+                        {{-- <span
+                            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center mt-0.5">0</span> --}}
                     </a>
 
                     <!-- Theme Toggle -->
@@ -94,8 +94,8 @@
                 <a href="{{ route('cart') }}"
                     class="relative p-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-light-gray rounded-lg">
                     <x-icon name="shopping-cart" class="w-6 h-6" />
-                    <span
-                        class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center mt-0.5">0</span>
+                    {{-- <span
+                        class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center mt-0.5">0</span> --}}
                 </a>
 
                 <!-- Theme Toggle -->

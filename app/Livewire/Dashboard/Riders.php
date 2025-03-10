@@ -467,6 +467,7 @@ class Riders extends Component
             // Check current user's status with this rider
             $userRider = $this->getUser()->riders()->find($rider->id);
             if ($userRider && $userRider->pivot->status === 1) {
+                // Update the rider with all data including profile_pic
                 $rider->update($riderData);
 
                 // Update plates
@@ -486,7 +487,7 @@ class Riders extends Component
                 $rider->refresh();
             }
         } else {
-            // Create new rider
+            // Create new rider with all data including profile_pic
             $rider = Rider::create($riderData);
 
             // Add plates

@@ -18,7 +18,19 @@ class SocialiteController extends Controller
             return redirect()->route('login')
                 ->with('error', 'Invalid social provider.');
         }
-        
+
+        if ($provider === 'google') {
+            return Socialite::driver($provider)
+                ->scopes(['email', 'profile'])
+                ->redirect();
+        }
+
+        if ($provider === 'facebook') {
+            return Socialite::driver($provider)
+                ->scopes(['email', 'public_profile'])
+                ->redirect();
+        }
+
         return Socialite::driver($provider)->redirect();
     }
 
@@ -30,16 +42,16 @@ class SocialiteController extends Controller
                 return redirect()->route('login')
                     ->with('error', 'Invalid social provider.');
             }
-            
+
             $socialiteUser = Socialite::driver($provider)->user();
-            
+
             // First try to find user by provider ID
             $user = User::where($provider.'_id', $socialiteUser->getId())->first();
-            
+
             // If not found by provider ID, try to find by email
             if (!$user && $socialiteUser->getEmail()) {
                 $user = User::where('email', $socialiteUser->getEmail())->first();
-                
+
                 // If user exists, update their provider ID
                 if ($user) {
                     $user->update([
@@ -67,4 +79,4 @@ class SocialiteController extends Controller
                 ->with('error', 'Something went wrong with ' . $provider . ' login: ' . $e->getMessage());
         }
     }
-} 
+}

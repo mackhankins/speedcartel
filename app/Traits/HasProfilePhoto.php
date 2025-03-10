@@ -15,37 +15,15 @@ trait HasProfilePhoto
     public function getProfilePhotoUrlAttribute()
     {
         if ($this->profile_pic) {
-            // Check if the file exists with the exact path
+            // Check if the file exists
             if (Storage::exists($this->profile_pic)) {
-                return Storage::url($this->profile_pic);
+                // For cloud storage, get the full URL
+                return Storage::disk(config('filesystems.default'))->url($this->profile_pic);
             }
 
-            // Check if the file exists with just the basename (in case the path is stored differently)
-            $basename = basename($this->profile_pic);
-            $directory = dirname($this->profile_pic);
-
-            if (Storage::exists($directory . '/' . $basename)) {
-                return Storage::url($directory . '/' . $basename);
-            }
-
-            // Check if any files exist in the directory
-            $files = Storage::files($directory);
-
-            if (!empty($files)) {
-                // Use the most recent file
-                $latestFile = end($files);
-
-                // Update the profile_pic field to point to the existing file
-                $this->profile_pic = $latestFile;
-                $this->save();
-
-                return Storage::url($latestFile);
-            }
-
-            // If we can't find the file, clear the profile_pic field and return default
+            // If the file doesn't exist, clear the profile_pic field and return default
             $this->profile_pic = null;
             $this->save();
-            return $this->getDefaultAvatarUrl();
         }
 
         // Return a default image if no profile_pic is set

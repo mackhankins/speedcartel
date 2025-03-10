@@ -68,9 +68,9 @@ class UpcomingBirthdaysWidget extends BaseWidget
                         }
                         
                         return Carbon::now()->diffInDays($nextBirthday, false);
-                    }),
+                    })
+                    ->sortable(false), // Make it clear this is not sortable at the database level
             ])
-            ->defaultSort('days_until', 'asc')
             ->emptyStateHeading('No birthdays found')
             ->emptyStateDescription('There are no riders with birthdays in the system.')
             ->emptyStateIcon('heroicon-o-cake')
@@ -128,7 +128,7 @@ class UpcomingBirthdaysWidget extends BaseWidget
                     $rider->days_until = $daysUntil;
                     
                     return $rider;
-                })->sortBy('days_until')->take(5);
+                })->sortBy('days_until')->take(5); // Sort by days_until in PHP, not in the database
                 
                 // Get the IDs of the 5 riders with the closest birthdays
                 $riderIds = $ridersWithDays->pluck('id')->toArray();

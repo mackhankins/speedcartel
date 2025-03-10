@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('class');
             $table->string('skill_level');
             $table->string('profile_pic')->nullable();
+            $table->json('social_profiles')->nullable();
             $table->timestamps();
         });
 

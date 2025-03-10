@@ -48,18 +48,18 @@ class Riders extends Component
         'tiktok' => '',
         'youtube' => ''
     ];
-    
+
     // Plates array
     public $plates = [];
-    
+
     // Current plate index
     public $current_plate_index = 0;
-    
+
     // Croppie related properties
     public $showCroppieModal = false;
     public $croppedImage = null;
     public $tempImageUrl = null;
-    
+
     // Helper property for linter
     protected $user;
 
@@ -95,10 +95,10 @@ class Riders extends Component
     {
         $this->loadRiders();
         $this->loadTracks();
-        
+
         // Initialize home_track to null
         $this->home_track = null;
-        
+
         // Initialize plates array with one empty plate
         $this->plates = [[
             'type' => '',
@@ -109,7 +109,7 @@ class Riders extends Component
 
     /**
      * Get the authenticated user
-     * 
+     *
      * @return \App\Models\User
      */
     protected function getUser()
@@ -126,12 +126,12 @@ class Riders extends Component
     {
         // Start with a "None" option
         $this->tracks = [['name' => 'None', 'value' => null]];
-        
+
         // Add all tracks from the database
         $dbTracks = \App\Models\Track::all()->map(function($track) {
             return ['name' => $track->name, 'value' => $track->id];
         })->toArray();
-        
+
         // Merge the "None" option with the tracks from the database
         $this->tracks = array_merge($this->tracks, $dbTracks);
     }
@@ -156,10 +156,10 @@ class Riders extends Component
             'plates',
             'current_plate_index'
         ]);
-        
+
         // Reset the profile picture cropper
         $this->dispatch('profile-pic-reset');
-        
+
         // Set default values
         $this->status = 0;
         $this->home_track = null;
@@ -170,7 +170,7 @@ class Riders extends Component
             'tiktok' => '',
             'youtube' => ''
         ];
-        
+
         // Initialize plates array with one empty plate
         $this->plates = [[
             'type' => '',
@@ -208,10 +208,10 @@ class Riders extends Component
         $this->skill_level = $rider->skill_level;
         $this->relationship = $userRider->pivot->relationship ?? 'parent';
         $this->status = $userRider->pivot->status ?? '0';
-        
+
         // Set home_track, ensuring it's null if empty
         $this->home_track = $rider->home_track ?: null;
-        
+
         $this->social_profiles = $rider->social_profiles ?? [
             'instagram' => '',
             'facebook' => '',
@@ -219,7 +219,7 @@ class Riders extends Component
             'tiktok' => '',
             'youtube' => ''
         ];
-        
+
         // Load plates
         $this->plates = $rider->plates()->get()->map(function($plate, $index) {
             if ($plate->is_current) {
@@ -231,7 +231,7 @@ class Riders extends Component
                 'year' => $plate->year ?? date('Y')
             ];
         })->toArray();
-        
+
         // Ensure there's at least one empty plate form
         if (empty($this->plates)) {
             $this->plates = [[
@@ -241,10 +241,10 @@ class Riders extends Component
             ]];
             $this->current_plate_index = 0;
         }
-        
+
         // Store the profile_pic path in temp_profile_pic as well
         $this->temp_profile_pic = $rider->profile_pic;
-        
+
         $this->showForm = true;
     }
 
@@ -296,10 +296,10 @@ class Riders extends Component
     public function selectExistingRider($riderId)
     {
         $rider = Rider::findOrFail($riderId);
-        
+
         // Check if the rider is already associated with the user
         $existingRider = $this->getUser()->riders()->find($riderId);
-        
+
         if ($existingRider) {
             // If rider exists, load it for editing
             $this->selectedRider = $existingRider;
@@ -317,7 +317,7 @@ class Riders extends Component
             $this->status = 0; // New associations start with status 0
             $this->editingRider = false;
         }
-        
+
         // Clear search results
         $this->searchResults = [];
     }
@@ -325,7 +325,7 @@ class Riders extends Component
     public function selectRider($riderId)
     {
         $rider = Rider::findOrFail($riderId);
-        
+
         // If the rider is already associated with the user, load for editing
         if ($existingRider = $this->getUser()->riders()->find($riderId)) {
             $this->selectedRider = $existingRider;
@@ -338,7 +338,7 @@ class Riders extends Component
         $this->selectedRider = $rider;
         $this->loadRiderData($rider);
         $this->showForm = true;
-        
+
         // Reset the status to pending for new associations
         $this->status = 0;
     }
@@ -347,7 +347,7 @@ class Riders extends Component
     {
         // Get the current user's relationship with this rider
         $userRider = $this->getUser()->riders()->find($rider->id);
-        
+
         $this->firstname = $rider->firstname;
         $this->lastname = $rider->lastname;
         $this->nickname = $rider->nickname;
@@ -356,10 +356,10 @@ class Riders extends Component
         $this->skill_level = $rider->skill_level;
         $this->relationship = $userRider?->pivot->relationship ?? 'parent';
         $this->status = $userRider?->pivot->status ?? '0';
-        
+
         // Set home_track, ensuring it's null if empty
         $this->home_track = $rider->home_track ?: null;
-        
+
         $this->social_profiles = $rider->social_profiles ?? [
             'instagram' => '',
             'facebook' => '',
@@ -367,7 +367,7 @@ class Riders extends Component
             'tiktok' => '',
             'youtube' => ''
         ];
-        
+
         // Load plates
         $plates = $rider->plates()->get();
         if ($plates->isNotEmpty()) {
@@ -390,7 +390,7 @@ class Riders extends Component
             ]];
             $this->current_plate_index = 0;
         }
-        
+
         // Store the profile_pic path in temp_profile_pic as well
         $this->temp_profile_pic = $rider->profile_pic;
     }
@@ -401,12 +401,12 @@ class Riders extends Component
     public function handleProfilePictureSaved($path)
     {
         $this->temp_profile_pic = $path;
-        
+
         // If we're editing a rider, update it directly
         if ($this->selectedRider && $this->editingRider) {
             $this->selectedRider->profile_pic = $path;
             $this->selectedRider->save();
-            
+
             // Refresh the rider to ensure we have the latest data
             $this->selectedRider->refresh();
         }
@@ -425,7 +425,7 @@ class Riders extends Component
     {
         unset($this->plates[$index]);
         $this->plates = array_values($this->plates);
-        
+
         // Ensure there's at least one plate form
         if (empty($this->plates)) {
             $this->plates = [
@@ -455,7 +455,7 @@ class Riders extends Component
             'home_track' => $this->home_track,
             'social_profiles' => $this->social_profiles
         ];
-        
+
         // Add the profile_pic to the rider data if we have a temporary path
         if ($this->temp_profile_pic) {
             $riderData['profile_pic'] = $this->temp_profile_pic;
@@ -463,12 +463,12 @@ class Riders extends Component
 
         if ($this->selectedRider) {
             $rider = $this->selectedRider;
-            
+
             // Check current user's status with this rider
             $userRider = $this->getUser()->riders()->find($rider->id);
             if ($userRider && $userRider->pivot->status === 1) {
                 $rider->update($riderData);
-                
+
                 // Update plates
                 $rider->plates()->delete(); // Remove existing plates
                 foreach ($this->plates as $index => $plateData) {
@@ -481,14 +481,14 @@ class Riders extends Component
                         ]);
                     }
                 }
-                
+
                 // Verify the rider was updated
                 $rider->refresh();
             }
         } else {
             // Create new rider
             $rider = Rider::create($riderData);
-            
+
             // Add plates
             foreach ($this->plates as $index => $plateData) {
                 if (!empty($plateData['type']) && !empty($plateData['number'])) {
@@ -544,7 +544,7 @@ class Riders extends Component
 
         if ($userCount <= 1) {
             // If this is the only user, delete the rider completely
-            
+
             // Delete the profile picture if it exists
             if ($rider->profile_pic) {
                 // Use the trait method if available
@@ -558,7 +558,7 @@ class Riders extends Component
                     }
                 }
             }
-            
+
             // Now delete the rider
             $rider->delete();
             $message = 'Rider deleted successfully';

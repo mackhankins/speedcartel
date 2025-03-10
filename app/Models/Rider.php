@@ -30,7 +30,7 @@ class Rider extends Model
     protected $casts = [
         'date_of_birth' => 'date',
         'class' => 'array',
-        'social_profiles' => 'array'
+        'social_profiles' => 'json'
     ];
 
     protected $pivotCasts = [
@@ -44,7 +44,7 @@ class Rider extends Model
         'class' => 'Class',
         'cruiser' => 'Cruiser'
     ];
-    
+
     /**
      * Available skill level options
      */

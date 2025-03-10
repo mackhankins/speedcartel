@@ -10,12 +10,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use App\Notifications\CustomVerifyEmail;
+use Filament\Models\Contracts\FilamentUser;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Filament\Panel;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles;
 
@@ -97,10 +98,8 @@ class User extends Authenticatable implements MustVerifyEmail
             return false;
         }
 
-        // For the manage panel, require specific roles
-        if ($panel->getId() === 'manage') {
-            return $this->hasAnyRole(['super_admin']);
-        }
+        return $this->hasAnyRole(['super_admin']);
+        
 
         return false;
     }

@@ -61,5 +61,7 @@
         </div>
     </div>
     @livewireScripts
+    @turnstileScripts()
+
 </body>
 </html>

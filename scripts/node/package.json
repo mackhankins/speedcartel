@@ -1,0 +1,15 @@
+{
+  "name": "bmx-events-scraper",
+  "version": "1.0.0",
+  "description": "Scraper for USA BMX events",
+  "main": "bmx_scraper.js",
+  "scripts": {
+    "scrape": "node bmx_scraper.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "puppeteer": "^22.8.2"
+  }
+} 

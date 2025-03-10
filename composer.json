@@ -19,6 +19,7 @@
         "pragmarx/google2fa": "^8.0",
         "ralphjsmit/laravel-filament-seo": "^1.5",
         "resend/resend-laravel": "^0.16.1",
+        "ryangjchandler/laravel-cloudflare-turnstile": "^2.0",
         "wireui/wireui": "^2.3"
     },
     "require-dev": {

@@ -50,10 +50,7 @@ class SponsorResource extends Resource
                             ->image()
                             ->directory('sponsors')
                             ->visibility('public')
-                            ->imageResizeMode('cover')
-                            ->imageCropAspectRatio('16:9')
-                            ->imageResizeTargetWidth('300')
-                            ->imageResizeTargetHeight('300'),
+                            ->imageResizeMode('cover'),
                             
                         Textarea::make('description')
                             ->rows(3)

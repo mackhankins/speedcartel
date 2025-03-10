@@ -23,7 +23,7 @@
                     class="px-4 py-5 text-gray-700 dark:text-white font-orbitron font-medium hover:bg-gray-100 dark:hover:bg-light-gray transition-colors duration-200">RACES</a>
                 <a href="{{ route('sponsors') }}"
                     class="px-4 py-5 text-gray-700 dark:text-white font-orbitron font-medium hover:bg-gray-100 dark:hover:bg-light-gray transition-colors duration-200">SPONSORS</a>
-                <a href="#"
+                <a href="{{ route('contact') }}"
                     class="px-4 py-5 text-gray-700 dark:text-white font-orbitron font-medium hover:bg-gray-100 dark:hover:bg-light-gray transition-colors duration-200">CONTACT</a>
 
                 <!-- Shopping Cart -->
@@ -128,7 +128,7 @@
                 class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Races</a>
             <a href="{{ route('sponsors') }}"
                 class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Sponsors</a>
-            <a href="#"
+            <a href="{{ route('contact') }}"
                 class="block px-3 py-2 text-gray-700 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-light-gray rounded-md">Contact</a>
 
             @auth

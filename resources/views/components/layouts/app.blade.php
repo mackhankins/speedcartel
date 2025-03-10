@@ -68,6 +68,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/theme.js'])
     @livewireStyles
     @stack('styles')
+    @turnstileScripts()
+
 </head>
 
 <body class="min-h-screen bg-gray-50 dark:bg-darker-gray text-gray-900 dark:text-white transition-colors duration-200">

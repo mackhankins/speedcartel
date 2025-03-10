@@ -631,26 +631,37 @@ function createMockHtmlWithEvents() {
     return aDay - bDay;
   });
   
-  // Convert to HTML
+  // Convert to HTML using the actual structure from the USA BMX website
   let html = '<div class="events-container">';
   
   events.forEach(event => {
     html += `
-      <div class="p-[20px] border border-website-ultraLightBlue">
-        <div class="w-fit border bg-website-brightGray">${event.category}</div>
-        <button class="text-[18px]">${event.title}</button>
-        <p class="text-[16px] font-MontserratSemiBold mt-[8px]">${event.date}</p>
-        <p class="text-[16px] font-MontserratMedium mt-4">
-          <a class="underline" href="${event.url}">${event.trackName}</a>
-          - ${event.location}
-        </p>
+      <div class="p-[20px] xsMax:p-[15px] border border-website-ultraLightBlue flex gap-x-[15px] xsMax:flex-col justify-between xs:mb-[16px] xsMax:mb-[16px]">
+        <div class="flex w-full xxsMax:flex-row-reverse justify-between items-center gap-6">
+          <div class="max-w-full w-full">
+            <div class="w-fit border bg-website-brightGray text-[14px] leading-[16px] text-website-onHoverBlue text-center font-MontserratSemiBold px-[10px] py-[2px] rounded-[3px] mb-4">${event.category}</div>
+            <button class="text-[18px] leading-[16px] xxsMax:text-[14px] xxsMax:!leading-[16px] text-website-lightBlue !font-MontserratSemiBold uppercase">${event.title}</button>
+            <p class="text-[16px] leading-[18px] text-website-ultraLightBlue font-semibold font-MontserratSemiBold mt-[8px]">${event.date}</p>
+            <p class="text-[16px] leading-[20px] xxsMax:text-[14px] xxsMax:leading-[16px] text-website-ultraLightBlue font-medium font-MontserratMedium mt-4">
+              <a class="underline" href="${event.url}">${event.trackName}</a> - ${event.location} <a href="https://maps.google.com/?q=${getRandomLatLng()}" class="underline" target="_blank" rel="noopener noreferrer">(directions)</a>
+            </p>
+          </div>
+        </div>
       </div>
     `;
   });
   
   html += '</div>';
-  console.log(`Created mock HTML with ${events.length} events`);
+  console.log(`Created mock HTML with ${events.length} events using actual USA BMX HTML structure`);
   return html;
+}
+
+// Helper function to generate random latitude/longitude for directions
+function getRandomLatLng() {
+  // Generate random coordinates in the continental US
+  const lat = 30 + Math.random() * 15; // ~30-45 degrees N
+  const lng = -120 + Math.random() * 40; // ~120-80 degrees W
+  return `${lat.toFixed(6)},${lng.toFixed(6)}`;
 }
 
 // Helper functions for mock data
@@ -760,170 +771,261 @@ function parseEvents(html) {
   
   console.log('Starting to parse HTML for events...');
   
-  // Extract event blocks using multiple patterns
-  const eventBlockRegex = [
-    /<div class="p-\[20px\][\s\S]*?<\/div><\/div><\/div>/g,
-    /<div class="border border-website-ultraLightBlue[\s\S]*?<\/div><\/div><\/div>/g,
-    /<div[^>]*?class="[^"]*?event-item[^"]*?"[\s\S]*?<\/div><\/div><\/div>/g
-  ];
-  
-  let eventBlocks = [];
-  
-  // Try each pattern until we find event blocks
-  for (const regex of eventBlockRegex) {
-    const matches = html.match(regex) || [];
-    if (matches.length > 0) {
-      console.log(`Found ${matches.length} event blocks using regex: ${regex}`);
-      eventBlocks = matches;
-      break;
-    }
-  }
-  
-  // If we still don't have event blocks, try a more general approach
-  if (eventBlocks.length === 0) {
-    console.log('No event blocks found with specific patterns, trying more general approach');
+  // First, check if this is our mock data
+  if (html.includes('USA BMX National') && html.includes('State Qualifier')) {
+    console.log('Detected mock event data, using special parsing for mock data');
     
-    // Look for any div that might contain event information
-    const generalBlockRegex = /<div[^>]*?class="[^"]*?(?:event|track|race)[^"]*?"[\s\S]*?<\/div>/gi;
-    eventBlocks = html.match(generalBlockRegex) || [];
-    
-    console.log(`Found ${eventBlocks.length} potential event blocks with general pattern`);
-  }
-  
-  console.log(`Found ${eventBlocks.length} event blocks`);
-  
-  // If we still don't have any event blocks, check if this is our mock data
-  if (eventBlocks.length === 0 && html.includes('USA BMX National Event')) {
-    console.log('Detected mock event data, using alternative parsing approach');
-    
-    // Extract the mock event divs
+    // Extract the mock event divs - these have a simpler structure
     const mockEventRegex = /<div class="p-\[20px\][^>]*?>[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/g;
-    eventBlocks = html.match(mockEventRegex) || [];
+    const eventBlocks = html.match(mockEventRegex) || [];
     
     console.log(`Found ${eventBlocks.length} mock event blocks`);
+    
+    // Parse each mock event block
+    eventBlocks.forEach((block, index) => {
+      try {
+        console.log(`Parsing mock event block ${index + 1}...`);
+        
+        // Extract category
+        const categoryMatch = block.match(/<div class="w-fit border bg-website-brightGray[^>]*?>(.*?)<\/div>/);
+        const category = categoryMatch ? categoryMatch[1].trim() : 'BMX Event';
+        
+        // Extract title
+        const titleMatch = block.match(/<button class="text-\[18px\][^>]*?>(.*?)<\/button>/);
+        const title = titleMatch ? titleMatch[1].trim() : 'Untitled Event';
+        
+        // Extract date
+        const dateMatch = block.match(/<p class="text-\[16px\][^>]*?font-MontserratSemiBold[^>]*?>(.*?)<\/p>/);
+        const dateText = dateMatch ? dateMatch[1].trim() : '';
+        
+        // Extract location and track
+        const locationMatch = block.match(/<p class="text-\[16px\][^>]*?font-MontserratMedium[^>]*?>(.*?)<\/p>/);
+        const locationHtml = locationMatch ? locationMatch[1].trim() : '';
+        
+        const trackMatch = locationHtml.match(/<a class="underline" href="[^"]*?">(.*?)<\/a>/);
+        const trackName = trackMatch ? trackMatch[1].trim() : '';
+        
+        const locationTextMatch = locationHtml.match(/<\/a>\s*-\s*([^<(]+)/);
+        const location = locationTextMatch ? locationTextMatch[1].trim() : '';
+        
+        // Extract URL
+        const urlMatch = block.match(/<a class="underline" href="([^"]+)">/) ||
+                        block.match(/<a[^>]*?class="[^"]*?underline[^"]*?"[^>]*?href="([^"]+)"[^>]*?>/);
+        const url = urlMatch ? (urlMatch[1].startsWith('http') ? urlMatch[1] : `https://www.usabmx.com${urlMatch[1]}`) : '';
+        
+        // Parse date
+        let startDate = null;
+        let endDate = null;
+        
+        if (dateText) {
+          const dateRangeMatch = dateText.match(/(\w+)\s+(\d+)(?:\s*-\s*(\d+))?,\s+(\d{4})/);
+          
+          if (dateRangeMatch) {
+            const month = dateRangeMatch[1];
+            const startDay = dateRangeMatch[2];
+            const endDay = dateRangeMatch[3] || startDay;
+            const year = dateRangeMatch[4];
+            
+            const monthMap = {
+              'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5,
+              'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11,
+              'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+              'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+            };
+            
+            const monthNum = monthMap[month] || 0;
+            
+            startDate = new Date(year, monthNum, startDay);
+            endDate = new Date(year, monthNum, endDay);
+            
+            startDate = startDate.toISOString().split('T')[0];
+            endDate = endDate.toISOString().split('T')[0];
+          }
+        }
+        
+        // Create event object
+        const event = {
+          title,
+          start_date: startDate,
+          end_date: endDate,
+          location: location || trackName,
+          url,
+          category,
+          description: `${category} event: ${title} at ${trackName || location || 'TBD'}`
+        };
+        
+        // Only add events with valid dates
+        if (startDate && endDate) {
+          console.log(`Adding mock event: ${title}`);
+          events.push(event);
+        } else {
+          console.log(`Skipping mock event due to missing dates: ${title}`);
+        }
+      } catch (error) {
+        console.error(`Error parsing mock event block ${index + 1}:`, error);
+      }
+    });
+    
+    console.log(`Successfully parsed ${events.length} mock events`);
+    return events;
   }
   
-  eventBlocks.forEach((block, index) => {
-    try {
-      console.log(`Parsing event block ${index + 1}...`);
-      
-      // Extract event type/category
-      const categoryMatch = block.match(/<div class="w-fit border bg-website-brightGray.*?">(.*?)<\/div>/) || 
-                           block.match(/<div[^>]*?class="[^"]*?category[^"]*?"[^>]*?>(.*?)<\/div>/);
-      let category = categoryMatch ? categoryMatch[1].trim() : '';
-      
-      console.log(`Category: ${category || 'Not found'}`);
-      
-      // Extract title
-      const titleMatch = block.match(/<button class="text-\[18px\].*?">(.*?)<\/button>/) ||
-                        block.match(/<h\d[^>]*?>(.*?)<\/h\d>/) ||
-                        block.match(/<div[^>]*?class="[^"]*?title[^"]*?"[^>]*?>(.*?)<\/div>/);
-      const title = titleMatch ? titleMatch[1].trim() : 'Untitled Event';
-      
-      console.log(`Title: ${title}`);
-      
-      // Extract date
-      const dateMatch = block.match(/<p class="text-\[16px\].*?font-MontserratSemiBold mt-\[8px\]">(.*?)<\/p>/) ||
-                       block.match(/<div[^>]*?class="[^"]*?date[^"]*?"[^>]*?>(.*?)<\/div>/) ||
-                       block.match(/<p[^>]*?>((?:\w+\s+\d{1,2}(?:-\d{1,2})?,\s+\d{4}))<\/p>/);
-      let dateText = dateMatch ? dateMatch[1].trim() : '';
-      
-      console.log(`Date text: ${dateText || 'Not found'}`);
-      
-      // Parse date
-      let startDate = null;
-      let endDate = null;
-      
-      if (dateText) {
-        // Try to parse various date formats
-        // Example: "March 09, 2025" or "March 09-10, 2025"
-        const dateRangeMatch = dateText.match(/(\w+)\s+(\d+)(?:\s*-\s*(\d+))?,\s+(\d{4})/);
-        
-        if (dateRangeMatch) {
-          const month = dateRangeMatch[1];
-          const startDay = dateRangeMatch[2];
-          const endDay = dateRangeMatch[3] || startDay; // If no end day, use start day
-          const year = dateRangeMatch[4];
-          
-          // Convert month name to number
-          const monthMap = {
-            'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5,
-            'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11,
-            'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-            'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-          };
-          
-          const monthNum = monthMap[month] || 0;
-          
-          startDate = new Date(year, monthNum, startDay);
-          endDate = new Date(year, monthNum, endDay);
-          
-          // Format dates as ISO strings
-          startDate = startDate.toISOString().split('T')[0];
-          endDate = endDate.toISOString().split('T')[0];
-          
-          console.log(`Parsed dates: ${startDate} to ${endDate}`);
-        } else {
-          console.log(`Could not parse date from: ${dateText}`);
+  // For real USA BMX website data, use the actual HTML structure
+  // Based on the sample event HTML provided
+  console.log('Parsing real USA BMX website data...');
+  
+  // Extract event blocks using the actual HTML structure
+  const realEventRegex = /<div class="p-\[20px\][^>]*?border border-website-ultraLightBlue flex[^>]*?>[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/g;
+  const eventBlocks = html.match(realEventRegex) || [];
+  
+  console.log(`Found ${eventBlocks.length} real event blocks`);
+  
+  // If no event blocks found with the specific pattern, try a more general approach
+  if (eventBlocks.length === 0) {
+    console.log('No event blocks found with specific pattern, trying more general approach');
+    
+    // Look for any div that might contain event information
+    const generalBlockRegex = /<div[^>]*?class="[^"]*?(?:border-website-ultraLightBlue|event|track|race)[^"]*?"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/gi;
+    const generalBlocks = html.match(generalBlockRegex) || [];
+    
+    console.log(`Found ${generalBlocks.length} potential event blocks with general pattern`);
+    
+    if (generalBlocks.length > 0) {
+      // Process these general blocks
+      generalBlocks.forEach((block, index) => {
+        try {
+          console.log(`Parsing general event block ${index + 1}...`);
+          parseEventBlock(block, events, index);
+        } catch (error) {
+          console.error(`Error parsing general event block ${index + 1}:`, error);
         }
-      }
-      
-      // Extract location
-      const locationMatch = block.match(/<p class="text-\[16px\].*?font-MontserratMedium mt-4">(.*?)<\/p>/) ||
-                           block.match(/<div[^>]*?class="[^"]*?location[^"]*?"[^>]*?>(.*?)<\/div>/);
-      let locationHtml = locationMatch ? locationMatch[1].trim() : '';
-      
-      console.log(`Location HTML: ${locationHtml || 'Not found'}`);
-      
-      // Extract track name and city/state from location HTML
-      const trackMatch = locationHtml.match(/<a class="underline" href="\/tracks\/.*?">(.*?)<\/a>/) ||
-                        locationHtml.match(/<a[^>]*?>(.*?)<\/a>/);
-      const trackName = trackMatch ? trackMatch[1].trim() : '';
-      
-      console.log(`Track name: ${trackName || 'Not found'}`);
-      
-      // Extract city/state - it's between the track name and the directions link
-      let location = '';
-      if (locationHtml && trackName) {
-        const cityStateMatch = locationHtml.match(new RegExp(`${trackName}</a>\\s*-\\s*([^<]+)`)) ||
-                              locationHtml.match(/-\s*([^<]+)/);
-        location = cityStateMatch ? cityStateMatch[1].trim() : '';
-        
-        console.log(`Location: ${location || 'Not found'}`);
-      }
-      
-      // Extract URL for the track
-      const urlMatch = block.match(/<a class="underline" href="(\/tracks\/[^"]+)">/) ||
-                      block.match(/<a[^>]*?href="([^"]*?track[^"]*?)"[^>]*?>/);
-      const url = urlMatch ? `https://www.usabmx.com${urlMatch[1]}` : '';
-      
-      console.log(`URL: ${url || 'Not found'}`);
-      
-      // Create event object
-      const event = {
-        title,
-        start_date: startDate,
-        end_date: endDate,
-        location: location || trackName, // Use combined location or just track name if that's all we have
-        url,
-        category: category || 'BMX Event',
-        description: `${category || 'BMX'} event: ${title} at ${trackName || location || 'TBD'}`
-      };
-      
-      // Only add events with valid dates
-      if (startDate && endDate) {
-        console.log(`Adding event: ${title}`);
-        events.push(event);
-      } else {
-        console.log(`Skipping event due to missing dates: ${title}`);
-      }
-    } catch (error) {
-      console.error(`Error parsing event block ${index + 1}:`, error);
+      });
     }
-  });
+  } else {
+    // Process the specific event blocks
+    eventBlocks.forEach((block, index) => {
+      try {
+        console.log(`Parsing event block ${index + 1}...`);
+        parseEventBlock(block, events, index);
+      } catch (error) {
+        console.error(`Error parsing event block ${index + 1}:`, error);
+      }
+    });
+  }
   
   console.log(`Successfully parsed ${events.length} events`);
   return events;
+}
+
+// Helper function to parse a single event block
+function parseEventBlock(block, events, index) {
+  // Extract category - using the actual HTML structure
+  const categoryMatch = block.match(/<div class="w-fit border bg-website-brightGray[^>]*?>(.*?)<\/div>/) ||
+                       block.match(/<div[^>]*?class="[^"]*?category[^"]*?"[^>]*?>(.*?)<\/div>/);
+  const category = categoryMatch ? categoryMatch[1].trim() : 'BMX Event';
+  
+  console.log(`Category: ${category}`);
+  
+  // Extract title - using the actual HTML structure
+  const titleMatch = block.match(/<button class="text-\[18px\][^>]*?>(.*?)<\/button>/) ||
+                    block.match(/<button[^>]*?class="[^"]*?text-\[18px\][^"]*?"[^>]*?>(.*?)<\/button>/);
+  const title = titleMatch ? titleMatch[1].trim() : 'Untitled Event';
+  
+  console.log(`Title: ${title}`);
+  
+  // Extract date - using the actual HTML structure
+  const dateMatch = block.match(/<p class="text-\[16px\][^>]*?font-MontserratSemiBold[^>]*?>(.*?)<\/p>/) ||
+                   block.match(/<p[^>]*?class="[^"]*?font-MontserratSemiBold[^"]*?"[^>]*?>(.*?)<\/p>/);
+  const dateText = dateMatch ? dateMatch[1].trim() : '';
+  
+  console.log(`Date text: ${dateText || 'Not found'}`);
+  
+  // Extract location and track - using the actual HTML structure
+  const locationMatch = block.match(/<p class="text-\[16px\][^>]*?font-MontserratMedium[^>]*?>(.*?)<\/p>/) ||
+                       block.match(/<p[^>]*?class="[^"]*?font-MontserratMedium[^"]*?"[^>]*?>(.*?)<\/p>/);
+  const locationHtml = locationMatch ? locationMatch[1].trim() : '';
+  
+  console.log(`Location HTML: ${locationHtml || 'Not found'}`);
+  
+  const trackMatch = locationHtml.match(/<a class="underline" href="[^"]*?">(.*?)<\/a>/) ||
+                    locationHtml.match(/<a[^>]*?class="[^"]*?underline[^"]*?"[^>]*?>(.*?)<\/a>/);
+  const trackName = trackMatch ? trackMatch[1].trim() : '';
+  
+  console.log(`Track name: ${trackName || 'Not found'}`);
+  
+  // Extract location text - it's between the track name and the directions link
+  let location = '';
+  if (locationHtml && trackName) {
+    const locationTextMatch = locationHtml.match(new RegExp(`${trackName}</a>\\s*-\\s*([^<(]+)`)) ||
+                             locationHtml.match(/-\s*([^<(]+)/);
+    location = locationTextMatch ? locationTextMatch[1].trim() : '';
+    
+    console.log(`Location: ${location || 'Not found'}`);
+  }
+  
+  // Extract URL - using the actual HTML structure
+  const urlMatch = block.match(/<a class="underline" href="([^"]+)">/) ||
+                  block.match(/<a[^>]*?class="[^"]*?underline[^"]*?"[^>]*?href="([^"]+)"[^>]*?>/);
+  const url = urlMatch ? (urlMatch[1].startsWith('http') ? urlMatch[1] : `https://www.usabmx.com${urlMatch[1]}`) : '';
+  
+  console.log(`URL: ${url || 'Not found'}`);
+  
+  // Parse date
+  let startDate = null;
+  let endDate = null;
+  
+  if (dateText) {
+    // Try to parse various date formats
+    // Example: "March 10, 2025" or "March 09-10, 2025"
+    const dateRangeMatch = dateText.match(/(\w+)\s+(\d+)(?:\s*-\s*(\d+))?,\s+(\d{4})/);
+    
+    if (dateRangeMatch) {
+      const month = dateRangeMatch[1];
+      const startDay = dateRangeMatch[2];
+      const endDay = dateRangeMatch[3] || startDay; // If no end day, use start day
+      const year = dateRangeMatch[4];
+      
+      // Convert month name to number
+      const monthMap = {
+        'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5,
+        'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11,
+        'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+        'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+      };
+      
+      const monthNum = monthMap[month] || 0;
+      
+      startDate = new Date(year, monthNum, startDay);
+      endDate = new Date(year, monthNum, endDay);
+      
+      // Format dates as ISO strings
+      startDate = startDate.toISOString().split('T')[0];
+      endDate = endDate.toISOString().split('T')[0];
+      
+      console.log(`Parsed dates: ${startDate} to ${endDate}`);
+    } else {
+      console.log(`Could not parse date from: ${dateText}`);
+    }
+  }
+  
+  // Create event object
+  const event = {
+    title,
+    start_date: startDate,
+    end_date: endDate,
+    location: location || trackName,
+    url,
+    category,
+    description: `${category} event: ${title} at ${trackName || location || 'TBD'}`
+  };
+  
+  // Only add events with valid dates
+  if (startDate && endDate) {
+    console.log(`Adding event: ${title}`);
+    events.push(event);
+  } else {
+    console.log(`Skipping event due to missing dates: ${title}`);
+  }
 }
 
 // Read existing events from file

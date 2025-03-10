@@ -16,20 +16,20 @@ trait HasProfilePhoto
     {
         if ($this->profile_pic) {
             // Check if the file exists with the exact path
-            if (Storage::disk('public')->exists($this->profile_pic)) {
-                return Storage::disk('public')->url($this->profile_pic);
+            if (Storage::exists($this->profile_pic)) {
+                return Storage::url($this->profile_pic);
             }
 
             // Check if the file exists with just the basename (in case the path is stored differently)
             $basename = basename($this->profile_pic);
             $directory = dirname($this->profile_pic);
 
-            if (Storage::disk('public')->exists($directory . '/' . $basename)) {
-                return Storage::disk('public')->url($directory . '/' . $basename);
+            if (Storage::exists($directory . '/' . $basename)) {
+                return Storage::url($directory . '/' . $basename);
             }
 
             // Check if any files exist in the directory
-            $files = Storage::disk('public')->files($directory);
+            $files = Storage::files($directory);
 
             if (!empty($files)) {
                 // Use the most recent file
@@ -39,7 +39,7 @@ trait HasProfilePhoto
                 $this->profile_pic = $latestFile;
                 $this->save();
 
-                return Storage::disk('public')->url($latestFile);
+                return Storage::url($latestFile);
             }
 
             // If we can't find the file, clear the profile_pic field and return default
@@ -63,8 +63,8 @@ trait HasProfilePhoto
     public function updateProfilePhoto($base64Image, $directory = 'profile-photos', $prefix = 'profile_')
     {
         // Ensure the directory exists
-        if (!Storage::disk('public')->exists($directory)) {
-            Storage::disk('public')->makeDirectory($directory);
+        if (!Storage::exists($directory)) {
+            Storage::makeDirectory($directory);
         }
 
         try {
@@ -82,14 +82,14 @@ trait HasProfilePhoto
             $this->deleteProfilePhoto();
 
             // Save the image to storage
-            $saved = Storage::disk('public')->put($path, $image_base64);
+            $saved = Storage::put($path, $image_base64);
 
             if (!$saved) {
                 throw new \Exception('Failed to save image to storage');
             }
 
             // Verify the file exists
-            if (!Storage::disk('public')->exists($path)) {
+            if (!Storage::exists($path)) {
                 throw new \Exception('File was not saved properly');
             }
 
@@ -120,24 +120,24 @@ trait HasProfilePhoto
         $oldPath = $this->profile_pic;
 
         // Try to delete with the exact path
-        if (Storage::disk('public')->exists($oldPath)) {
-            Storage::disk('public')->delete($oldPath);
+        if (Storage::exists($oldPath)) {
+            Storage::delete($oldPath);
         }
 
         // Also try with just the basename in the same directory
         $directory = dirname($oldPath);
         $oldBasename = basename($oldPath);
-        if (Storage::disk('public')->exists($directory . '/' . $oldBasename)) {
-            Storage::disk('public')->delete($directory . '/' . $oldBasename);
+        if (Storage::exists($directory . '/' . $oldBasename)) {
+            Storage::delete($directory . '/' . $oldBasename);
         }
 
         // Check if the directory is empty and delete it if it is
-        $files = Storage::disk('public')->files($directory);
+        $files = Storage::files($directory);
         if (empty($files)) {
-            $directories = Storage::disk('public')->directories($directory);
+            $directories = Storage::directories($directory);
             if (empty($directories)) {
                 // Only delete the directory if it's empty (no files or subdirectories)
-                Storage::disk('public')->deleteDirectory($directory);
+                Storage::deleteDirectory($directory);
             }
         }
 

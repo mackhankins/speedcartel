@@ -16,3 +16,9 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Node.js scripts
+/scripts/node/node_modules
+/scripts/node/*.log
+/storage/app/temp_events.json
+/storage/app/*.backup.*

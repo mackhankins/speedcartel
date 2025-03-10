@@ -16,7 +16,7 @@ class ProfilePictureCropper extends Component
     public $croppedImage = null;
     public $tempImageUrl = null;
     public $showCroppieModal = false;
-    
+
     // Configuration properties (can be passed from parent)
     public $storagePath = 'uploads';
     public $aspectRatio = 1; // Square by default
@@ -37,17 +37,17 @@ class ProfilePictureCropper extends Component
     public $model = null; // Model instance to update directly
     public $modelPhotoField = 'profile_pic'; // Field name in the model
     public $disabled = false; // Whether the component is disabled
-    
+
     // Events
     protected $listeners = ['imageCropped'];
-    
+
     /**
      * Mount the component with optional configuration
      */
     public function mount(
-        $storagePath = null, 
-        $aspectRatio = null, 
-        $viewportWidth = null, 
+        $storagePath = null,
+        $aspectRatio = null,
+        $viewportWidth = null,
         $viewportHeight = null,
         $filePrefix = null,
         $cropperType = null,
@@ -79,18 +79,18 @@ class ProfilePictureCropper extends Component
         if ($model) $this->model = $model;
         if ($modelPhotoField) $this->modelPhotoField = $modelPhotoField;
         if ($disabled !== null) $this->disabled = $disabled;
-        
+
         // Ensure storage path exists
-        if (!Storage::disk('public')->exists($this->storagePath)) {
-            Storage::disk('public')->makeDirectory($this->storagePath);
+        if (!Storage::exists($this->storagePath)) {
+            Storage::makeDirectory($this->storagePath);
         }
-        
+
         // If we have a model with a profile picture, initialize the component with it
         if ($this->model && $this->model->{$this->modelPhotoField}) {
-            $this->dispatch('profile-picture-init', url: asset('storage/' . $this->model->{$this->modelPhotoField}));
+            $this->dispatch('profile-picture-init', url: Storage::url($this->model->{$this->modelPhotoField}));
         }
     }
-    
+
     /**
      * Handle file upload
      */
@@ -104,7 +104,7 @@ class ProfilePictureCropper extends Component
             );
             return;
         }
-        
+
         $this->validate([
             'photo' => 'image|max:5120|dimensions:min_width=400,min_height=300',
         ]);
@@ -112,7 +112,7 @@ class ProfilePictureCropper extends Component
         try {
             // Generate a temporary URL for the uploaded image
             $this->tempImageUrl = $this->photo->temporaryUrl();
-            
+
             // Open the cropping modal
             $this->showCroppieModal = true;
         } catch (\Exception $e) {
@@ -122,7 +122,7 @@ class ProfilePictureCropper extends Component
             );
         }
     }
-    
+
     /**
      * Save the cropped image
      */
@@ -136,7 +136,7 @@ class ProfilePictureCropper extends Component
             );
             return false;
         }
-        
+
         if (!$this->croppedImage) {
             return false;
         }
@@ -151,29 +151,29 @@ class ProfilePictureCropper extends Component
             // Generate a unique filename
             $filename = $this->filePrefix . time() . '.' . $image_type;
             $path = $this->storagePath . '/' . $filename;
-            
+
             // Delete old file if we have a model with a profile picture
             if ($this->model && $this->model->{$this->modelPhotoField}) {
                 $oldPath = $this->model->{$this->modelPhotoField};
-                
+
                 // Delete the file if it exists
-                if (Storage::disk('public')->exists($oldPath)) {
-                    Storage::disk('public')->delete($oldPath);
+                if (Storage::exists($oldPath)) {
+                    Storage::delete($oldPath);
                 }
             }
-            
+
             // Save the image to storage
-            $saved = Storage::disk('public')->put($path, $image_base64);
-            
+            $saved = Storage::put($path, $image_base64);
+
             if (!$saved) {
                 throw new \Exception('Failed to save image to storage');
             }
-            
+
             // Verify the file exists
-            if (!Storage::disk('public')->exists($path)) {
+            if (!Storage::exists($path)) {
                 throw new \Exception('File was not saved properly');
             }
-            
+
             // If a model is provided, update it directly
             if ($this->model && method_exists($this->model, 'updateProfilePhoto')) {
                 // Use the trait method if available
@@ -183,19 +183,19 @@ class ProfilePictureCropper extends Component
                 $this->model->{$this->modelPhotoField} = $path;
                 $this->model->save();
             }
-            
+
             // Notify the user
             $this->notification()->success(
                 $title = 'Image Cropped',
                 $description = 'Your image has been cropped successfully.'
             );
-            
+
             // Reset the component state
             $this->reset(['croppedImage', 'tempImageUrl', 'showCroppieModal']);
-            
+
             // Always emit event with the saved path
             $this->dispatch('profile-picture-saved', path: $path);
-            
+
             return $path;
         } catch (\Exception $e) {
             // Notify the user
@@ -203,11 +203,11 @@ class ProfilePictureCropper extends Component
                 $title = 'Error',
                 $description = 'There was an error saving your cropped image. Please try again.'
             );
-            
+
             return false;
         }
     }
-    
+
     /**
      * Close the cropping modal
      */
@@ -215,7 +215,7 @@ class ProfilePictureCropper extends Component
     {
         $this->reset(['croppedImage', 'tempImageUrl', 'showCroppieModal']);
     }
-    
+
     /**
      * Render the component
      */

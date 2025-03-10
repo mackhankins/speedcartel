@@ -26,7 +26,7 @@ class PendingRideablesWidget extends BaseWidget
             ->query(
                 User::query()
                     ->whereHas('riders', function (Builder $query) {
-                        $query->wherePivot('status', false);
+                        $query->where('rideables.status', false);
                     })
             )
             ->columns([
@@ -40,13 +40,13 @@ class PendingRideablesWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('pending_riders_count')
                     ->label('Pending Riders')
                     ->counts('riders', function (Builder $query) {
-                        return $query->wherePivot('status', false);
+                        return $query->where('rideables.status', false);
                     }),
                 Tables\Columns\TextColumn::make('pending_riders')
                     ->label('Rider Names')
                     ->getStateUsing(function (User $user): string {
                         return $user->riders()
-                            ->wherePivot('status', false)
+                            ->where('rideables.status', false)
                             ->get()
                             ->pluck('full_name')
                             ->join(', ');
@@ -55,10 +55,10 @@ class PendingRideablesWidget extends BaseWidget
                     ->label('Relationships')
                     ->getStateUsing(function (User $user): string {
                         return $user->riders()
-                            ->wherePivot('status', false)
+                            ->where('rideables.status', false)
                             ->get()
                             ->map(function ($rider) use ($user) {
-                                $relationship = $user->riders()->wherePivot('rider_id', $rider->id)->first()->pivot->relationship;
+                                $relationship = $user->riders()->where('rider_id', $rider->id)->first()->pivot->relationship;
                                 return ucfirst($relationship);
                             })
                             ->join(', ');
@@ -73,8 +73,8 @@ class PendingRideablesWidget extends BaseWidget
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->action(function (User $user) {
-                        $user->riders()->wherePivot('status', false)->updateExistingPivot(
-                            $user->riders()->wherePivot('status', false)->pluck('rider_id'),
+                        $user->riders()->where('rideables.status', false)->updateExistingPivot(
+                            $user->riders()->where('rideables.status', false)->pluck('rider_id'),
                             ['status' => true]
                         );
                     })
@@ -91,8 +91,8 @@ class PendingRideablesWidget extends BaseWidget
                     ->icon('heroicon-o-check')
                     ->action(function ($records) {
                         foreach ($records as $user) {
-                            $user->riders()->wherePivot('status', false)->updateExistingPivot(
-                                $user->riders()->wherePivot('status', false)->pluck('rider_id'),
+                            $user->riders()->where('rideables.status', false)->updateExistingPivot(
+                                $user->riders()->where('rideables.status', false)->pluck('rider_id'),
                                 ['status' => true]
                             );
                         }
